@@ -2,11 +2,11 @@
 
 This package supports the handling of instance-identification fields as proposed in Theos paper.
 
-In short, via an instance-identification header field, a micro-service instance can disclose it's identity, by responding with structured information.
+In short, via an instance-identification header field, a micro-service instance can disclose its identity by responding with structured information.
 
-This becomes in particular of interest, if the micro-service also includes instance-information of other called services in its response.
+This becomes in particular of interest if the micro-service also includes instance-information of other called services in its response.
 
-An single instance is represented through it MIID
+A single instance is represented through its MIID
 
 `MIID := <sN> "/" <vN> ["/" <vA>] "%" <t>s`
 
@@ -29,11 +29,11 @@ MIID := <sN> "/" <vN> ["/" <vA>] "%" <t>s
 
 ## Supported functionality
 
-This packages supports the
+This package supports the
 
 - creation
 - parsing
 - encoding
 - human-friendly display
 
-of instance-id
+of instance-ids
