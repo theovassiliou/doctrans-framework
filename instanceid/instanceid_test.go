@@ -1,6 +1,7 @@
 package instanceid
 
 import (
+	"io/ioutil"
 	"reflect"
 	"testing"
 
@@ -135,20 +136,12 @@ func Test_parseMIID(t *testing.T) {
 		{
 			"simple-notSecond",
 			args{"msA/1.17%3333"},
-			Miid{
-				Sn: "msA",
-				Vn: "1.17",
-				T:  3333,
-			},
+			Miid{},
 		},
 		{
 			"simple-notSecondNumber",
 			args{"msA/1.17%333a"},
-			Miid{
-				Sn: "msA",
-				Vn: "1.17",
-				T:  0,
-			},
+			Miid{},
 		},
 		{
 			"toomanydelimiters",
@@ -169,23 +162,89 @@ func Test_parseMIID(t *testing.T) {
 	}
 }
 
+func Test_parseMIIDFromFile(t *testing.T) {
+	type args struct {
+		fileName string
+	}
+
+	log.SetLevel(log.TraceLevel)
+	tests := []struct {
+		name     string
+		args     args
+		wantMiid Miid
+	}{
+		{
+			"complex1",
+			args{"../test/instanceId1.txt"},
+			Miid{},
+		},
+		{
+			"complex2",
+			args{"../test/miid1.txt"},
+			Miid{
+				Sn: "MsA",
+				Vn: "1.1",
+				Va: "xxx",
+				T:  22,
+			},
+		},
+		{
+			"Nonsens",
+			args{"../Makefile"},
+			Miid{
+				Sn: "",
+				Vn: "",
+				Va: "",
+				T:  0,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			file, err := ioutil.ReadFile(tt.args.fileName)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if gotMiid := parseMIID(string(file)); !reflect.DeepEqual(gotMiid, tt.wantMiid) {
+				t.Errorf("parseMIID() = %v, want %v", gotMiid, tt.wantMiid)
+			}
+		})
+	}
+}
+
 func Test_parseCiid(t *testing.T) {
 	log.SetLevel(log.TraceLevel)
 
 	A := Miid{
 		Sn: "A",
+		Vn: "1.1",
+		Va: "",
+		T:  22,
 	}
+
 	B := Miid{
 		Sn: "B",
+		Vn: "1.1",
+		Va: "",
+		T:  22,
 	}
 	C := Miid{
 		Sn: "C",
+		Vn: "1.1",
+		Va: "",
+		T:  22,
 	}
 	D := Miid{
 		Sn: "D",
+		Vn: "1.1",
+		Va: "",
+		T:  22,
 	}
 	E := Miid{
 		Sn: "E",
+		Vn: "1.1",
+		Va: "",
+		T:  22,
 	}
 
 	type args struct {
@@ -213,13 +272,18 @@ func Test_parseCiid(t *testing.T) {
 		{
 			"one Call",
 			args{
-				"msA/1.17/dev-123ab%3333s(A)",
+				"msA/1.17/dev-123ab%3333s(A/1.1%22s)",
 			},
 			Ciid{
 				Miid: Miid{Sn: "msA", Vn: "1.17", Va: "dev-123ab", T: 3333},
 				Ciids: []Ciid{
 					{
-						Miid: Miid{Sn: "A"},
+						Miid: Miid{
+							Sn: "A",
+							Vn: "1.1",
+							Va: "",
+							T:  22,
+						},
 					},
 				},
 			},
@@ -227,16 +291,26 @@ func Test_parseCiid(t *testing.T) {
 		{
 			"one Call Plus another one",
 			args{
-				"msA/1.17/dev-123ab%3333s(A+B)",
+				"msA/1.17/dev-123ab%3333s(A/1.1%22s+B/1.1%22s)",
 			},
 			Ciid{
 				Miid: Miid{Sn: "msA", Vn: "1.17", Va: "dev-123ab", T: 3333},
 				Ciids: []Ciid{
 					{
-						Miid: Miid{Sn: "A"},
+						Miid: Miid{
+							Sn: "A",
+							Vn: "1.1",
+							Va: "",
+							T:  22,
+						},
 					},
 					{
-						Miid: Miid{Sn: "B"},
+						Miid: Miid{
+							Sn: "B",
+							Vn: "1.1",
+							Va: "",
+							T:  22,
+						},
 					},
 				},
 			},
@@ -244,19 +318,34 @@ func Test_parseCiid(t *testing.T) {
 		{
 			"one Call Plus another one and one call",
 			args{
-				"msA/1.17/dev-123ab%3333s(A+B(C))",
+				"msA/1.17/dev-123ab%3333s(A/1.1%22s+B/1.1%22s(C/1.1%22s))",
 			},
 			Ciid{
 				Miid: Miid{Sn: "msA", Vn: "1.17", Va: "dev-123ab", T: 3333},
 				Ciids: []Ciid{
 					{
-						Miid: Miid{Sn: "A"},
+						Miid: Miid{
+							Sn: "A",
+							Vn: "1.1",
+							Va: "",
+							T:  22,
+						},
 					},
 					{
-						Miid: Miid{Sn: "B"},
+						Miid: Miid{
+							Sn: "B",
+							Vn: "1.1",
+							Va: "",
+							T:  22,
+						},
 						Ciids: []Ciid{
 							{
-								Miid: Miid{Sn: "C"},
+								Miid: Miid{
+									Sn: "C",
+									Vn: "1.1",
+									Va: "",
+									T:  22,
+								},
 							},
 						},
 					},
@@ -266,7 +355,7 @@ func Test_parseCiid(t *testing.T) {
 		{
 			"simple",
 			args{
-				"A(B+C(D+E))",
+				"A/1.1%22s(B/1.1%22s+C/1.1%22s(D/1.1%22s+E/1.1%22s))",
 			},
 			Ciid{A, []Ciid{
 				{Miid: B},
@@ -278,7 +367,7 @@ func Test_parseCiid(t *testing.T) {
 		{
 			"simple",
 			args{
-				"A(B)",
+				"A/1.1%22s(B/1.1%22s)",
 			},
 			Ciid{A,
 				[]Ciid{
@@ -289,7 +378,7 @@ func Test_parseCiid(t *testing.T) {
 		{
 			"simple",
 			args{
-				"A(B+C)",
+				"A/1.1%22s(B/1.1%22s+C/1.1%22s)",
 			},
 			Ciid{A,
 				[]Ciid{
@@ -378,23 +467,23 @@ func Test_printCiid(t *testing.T) {
 	}{
 		{
 			"simple",
-			args{parseCiid("A(B+C)")},
-			49,
+			args{parseCiid("A/1.1%22s(B/1.1%22s+C/1.1%22s)")},
+			79,
 		},
 		{
 			"simple2",
-			args{parseCiid("A(B+C(D))")},
-			70,
+			args{parseCiid("A/1.1%22s(B/1.1%22s+C/1.1%22s(D/1.1%22s))")},
+			110,
 		},
 		{
 			"iid1",
-			args{parseCiid("msA/1.1/abs%22s(msB/2.0/xxxx%333s+C(D))")},
-			95,
+			args{parseCiid("msA/1.1/abs%22s(msB/2.0/xxxx%333s+C/1.1%22s(D/1.1%22s))")},
+			115,
 		},
 		{
 			"iid2",
-			args{parseCiid("msA/1.1/abs%22s(msB/2.0/xxxx%333s+msC/1.1%22s(D))")},
-			107,
+			args{parseCiid("msA/1.1/abs%22s(msB/2.0/xxxx%333s+msC/1.1%22s(D/1.1%22s))")},
+			117,
 		},
 	}
 	for _, tt := range tests {
@@ -426,19 +515,19 @@ func TestCiid_String(t *testing.T) {
 		},
 		{
 			"justSimpleMidd",
-			"A",
+			"A/1%22s",
 		},
 		{
 			"fullMiidOneCiid",
-			"msA/1.1/feature-branch-22aabbcc%22s(msB)",
+			"msA/1.1/feature-branch-22aabbcc%22s(msB/2.2%33s)",
 		},
 		{
 			"fullMiidTwoCiid",
-			"msA/1.1/feature-branch-22aabbcc%22s(msB+msC)",
+			"msA/1.1/feature-branch-22aabbcc%22s(msB/xx%333s+msC/222%444s)",
 		},
 		{
 			"complexFunc",
-			"A(B(C+D)+D(E))",
+			"A/1.1%22s(B/1.1%22s(C/1.1%22s+D/1.1%22s)+D/1.1%22s(E/1.1%22s))",
 		},
 	}
 	for _, tt := range tests {
@@ -462,7 +551,7 @@ func TestNewCiid(t *testing.T) {
 	}{
 		{
 			"simpleMiid",
-			args{"msA/1.1%22"},
+			args{"msA/1.1%22s"},
 			Ciid{
 				Miid{
 					Sn: "msA",
@@ -475,7 +564,7 @@ func TestNewCiid(t *testing.T) {
 		},
 		{
 			"fullMiid",
-			args{"msA/1.1/feature-branch-22aabbcc%22"},
+			args{"msA/1.1/feature-branch-22aabbcc%22s"},
 			Ciid{
 				Miid: Miid{
 					Sn: "msA",
@@ -501,7 +590,7 @@ func TestNewCiid(t *testing.T) {
 		},
 		{
 			"fullMiidOneCiid",
-			args{"msA/1.1/feature-branch-22aabbcc%22(msB)"},
+			args{"msA/1.1/feature-branch-22aabbcc%22s(msB/1.1%22s)"},
 			Ciid{
 				Miid: Miid{
 					Sn: "msA",
@@ -513,9 +602,9 @@ func TestNewCiid(t *testing.T) {
 					{
 						Miid: Miid{
 							Sn: "msB",
-							Vn: "",
+							Vn: "1.1",
 							Va: "",
-							T:  0,
+							T:  22,
 						},
 						Ciids: nil,
 					},
@@ -524,7 +613,7 @@ func TestNewCiid(t *testing.T) {
 		},
 		{
 			"fullMiidTwoCiid",
-			args{"msA/1.1/feature-branch-22aabbcc%22s(msB+msC)"},
+			args{"msA/1.1/feature-branch-22aabbcc%22s(msB/1.1%22s+msC/1.1%22s)"},
 			Ciid{
 				Miid: Miid{
 					Sn: "msA",
@@ -536,18 +625,18 @@ func TestNewCiid(t *testing.T) {
 					{
 						Miid: Miid{
 							Sn: "msB",
-							Vn: "",
+							Vn: "1.1",
 							Va: "",
-							T:  0,
+							T:  22,
 						},
 						Ciids: nil,
 					},
 					{
 						Miid: Miid{
 							Sn: "msC",
-							Vn: "",
+							Vn: "1.1",
 							Va: "",
-							T:  0,
+							T:  22,
 						},
 						Ciids: nil,
 					},
@@ -556,35 +645,38 @@ func TestNewCiid(t *testing.T) {
 		},
 		{
 			"complexFunc",
-			args{"A(B(C+D)+D(E)"},
+			args{"A/1.1%22s(B/1.1%22s(C/1.1%22s+D/1.1%22s)+D/1.1%22s(E/1.1%22s)"},
 			Ciid{
 				Miid: Miid{
 					Sn: "A",
+					Vn: "1.1",
+					Va: "",
+					T:  22,
 				},
 				Ciids: []Ciid{
 					{
 						Miid: Miid{
 							Sn: "B",
-							Vn: "",
+							Vn: "1.1",
 							Va: "",
-							T:  0,
+							T:  22,
 						},
 						Ciids: []Ciid{
 							{
 								Miid: Miid{
 									Sn: "C",
-									Vn: "",
+									Vn: "1.1",
 									Va: "",
-									T:  0,
+									T:  22,
 								},
 								Ciids: nil,
 							},
 							{
 								Miid: Miid{
 									Sn: "D",
-									Vn: "",
+									Vn: "1.1",
 									Va: "",
-									T:  0,
+									T:  22,
 								},
 								Ciids: nil,
 							},
@@ -593,17 +685,17 @@ func TestNewCiid(t *testing.T) {
 					{
 						Miid: Miid{
 							Sn: "D",
-							Vn: "",
+							Vn: "1.1",
 							Va: "",
-							T:  0,
+							T:  22,
 						},
 						Ciids: []Ciid{
 							{
 								Miid: Miid{
 									Sn: "E",
-									Vn: "",
+									Vn: "1.1",
 									Va: "",
-									T:  0,
+									T:  22,
 								},
 								Ciids: nil,
 							},
@@ -634,21 +726,16 @@ func TestNewMiid(t *testing.T) {
 		{
 			"CiidNotExpected",
 			args{"msA/1.1/feature-branch-22aabbcc%22s(msB+msC)"},
-			Miid{
-				Sn: "msA",
-				Vn: "1.1",
-				Va: "feature-branch-22aabbcc",
-				T:  22,
-			},
+			Miid{},
 		},
 		{
 			"simple",
-			args{"msA"},
+			args{"msA/1.1%22s"},
 			Miid{
 				Sn: "msA",
-				Vn: "",
+				Vn: "1.1",
 				Va: "",
-				T:  0,
+				T:  22,
 			},
 		},
 		{
@@ -664,28 +751,82 @@ func TestNewMiid(t *testing.T) {
 		{
 			"no clue",
 			args{"This is some text"},
-			Miid{
-				Sn: "This is some text",
-				Vn: "",
-				Va: "",
-				T:  0,
-			},
+			Miid{},
 		},
 		{
 			"no clue",
 			args{"(/)"},
-			Miid{
-				Sn: "(",
-				Vn: ")",
-				Va: "",
-				T:  0,
-			},
+			Miid{},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotMiid := NewMiid(tt.args.id); !reflect.DeepEqual(gotMiid, tt.wantMiid) {
 				t.Errorf("NewMiid() = %v, want %v", gotMiid, tt.wantMiid)
+			}
+		})
+	}
+}
+
+func TestSanityCheck(t *testing.T) {
+	type args struct {
+		miid string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"correct",
+			args{"a/a%22s"},
+			true,
+		},
+		{
+			"correct max",
+			args{"a/b/c%22s"},
+			true,
+		},
+		{
+			"no sec",
+			args{"a/b/xx%22"},
+			false,
+		},
+		{
+			"to many /",
+			args{"a/b/22/s/s/"},
+			false,
+		},
+		{
+			"not enough",
+			args{"abs/1.1%22s"},
+			true,
+		},
+		{
+			"no /",
+			args{"ab22s"},
+			false,
+		},
+		{
+			"has +",
+			args{"ab/1.1%22s+ab/1.1%22s"},
+			false,
+		},
+		{
+			"has (",
+			args{"ab/1.1%22s(A)s"},
+			false,
+		},
+		{
+			"has )",
+			args{"ab/1.1%22s(A)+s"},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := SanityCheck(tt.args.miid); got != tt.want {
+				t.Errorf("SanityCheck() = %v, want %v", got, tt.want)
 			}
 		})
 	}

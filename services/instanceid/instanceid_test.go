@@ -136,11 +136,11 @@ func TestCountDtaTransform(t *testing.T) {
 			"transform document",
 			"/v1/document/transform",
 			DocRequest{
-				"abc", []byte(`MsA/1.1/xxx%22s+msB/2.0.1/yyyy%444s+(msC/1.4%5555s+msD/2.2%23234s)`), "instance-id", nil,
+				"abc", []byte(`MsA/1.1/xxx%22s(msC/1.4%5555s+msD/2.2%23234s)`), "instance-id", nil,
 			},
 			DocResponse{
 				[]byte(`.
-└── [0s]  MsA/1.1
+└── [22s]  MsA/1.1
     ├── [5555s]  msC/1.4
     └── [23234s]  msD/2.2
 `), nil, nil,

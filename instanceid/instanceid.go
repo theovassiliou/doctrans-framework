@@ -144,6 +144,9 @@ func (c Ciid) visitCiid(t treeprint.Tree) treeprint.Tree {
 }
 
 func parseMIID(id string) (miid Miid) {
+	if !SanityCheck(id) {
+		return miid
+	}
 	s := strings.SplitN(id, "/", -1)
 	l := len(s)
 	var r Miid
@@ -236,4 +239,29 @@ func splitOnPlus(s string) (ss []string) {
 		ss = append(ss, s)
 	}
 	return deleteEmpty(ss)
+}
+
+// SanityCheck checks the given miid against some rules to ensure that it can be an Miid
+// returns true if miid could be an Miid false otherwise
+func SanityCheck(miid string) bool {
+	miid = strings.TrimSpace(miid)
+
+	// last rune must be s
+	if !strings.HasSuffix(miid, "s") {
+		return false
+	}
+
+	// at least two /
+	s := strings.Count(miid, "/")
+	if s < 1 || s > 3 {
+		return false
+	}
+
+	// no '+', no '(' no ')'
+
+	if strings.ContainsAny(miid, "+()") {
+		return false
+	}
+
+	return true
 }

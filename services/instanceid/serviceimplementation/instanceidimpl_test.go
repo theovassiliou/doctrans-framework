@@ -27,7 +27,7 @@ func TestExecuteWorkerLocally(t *testing.T) {
 				"../../../test/instanceId1.txt",
 			},
 			`.
-└── [0s]  MsA/1.1
+└── [22s]  MsA/1.1
     ├── [5555s]  msC/1.4
     └── [23234s]  msD/2.2
 `,
