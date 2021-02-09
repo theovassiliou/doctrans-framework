@@ -8,9 +8,9 @@ Accepted
 
 ## Context
 
-Within the framework a reference implementation is given. Examples demonstrate the usage of the framework. Both as a server and a client.
-As we are also following the reverse-proxy approach for providing simultaneously GRPC and HTTP access to each service, example on how to implement
-this would be also beneficial
+Within the framework, a reference implementation for DTA servers is given. Examples demonstrate the usage of the framework, both as a server and a client.
+
+As we are also following the reverse-proxy approach for providing simultaneous GRPC and HTTP access to each service, an example of how this is implemented effectively would also be beneficial.
 
 ## Decision
 
@@ -23,8 +23,8 @@ We will provide example implementations for
 
 ## Consequences
 
-By providing this examples the documentation becomse much more conciese. This examples should not be considered as production ready. Each example might focus on a different aspect of the implementation framework.
-DTA implementation that should be considered production ready should be maintenained independendly from this repo.
+By providing these examples, the documentation becomes much more concise. These examples should not be considered production-ready. Each example might focus on a different aspect of the implementation framework.
+DTA implementation that should be considered production-ready should be maintained independently from this repo.
 
 ### Risks
 

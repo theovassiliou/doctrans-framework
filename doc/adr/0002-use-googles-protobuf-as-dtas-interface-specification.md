@@ -10,13 +10,13 @@ Amended by [3. Use GRPC as main transport communication](0003-use-grpc-as-main-t
 
 ## Context
 
-We are defining a framework to create a series of various micro-services. For the API specification we required an interface specification language.
+We are defining a framework to create a series of various micro-services. For the API specification, we required an interface specification language.
 
-We considered swagger/openAPI and protobuf as primary API specification language.
+We considered swagger/openAPI and protobuf as the primary API specification language.
 
 ## Decision
 
-For transport efficiency reasons we decided to use protbuf as primary API interface specification language.
+For transport efficiency reasons, we decided to use protbuf as the primary API interface specification language.
 
 ## Consequences
 

@@ -8,7 +8,7 @@ Accepted
 
 ## Context
 
-DTA is a framework that evolves over time. We might break things, we might improve things. Tests might help us
+DTA is a framework that evolves. We might break things we might improve things. Tests might help us
 to define the current status.
 
 ## Decision
