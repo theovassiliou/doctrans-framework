@@ -1,0 +1,255 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "dtaservice.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/document/transform": {
+      "post": {
+        "summary": "Request to transform a plain text document",
+        "operationId": "DTAServer_TransformDocument",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dtaserviceTransformDocumentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/dtaserviceTransformDocumentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DTAServer"
+        ]
+      }
+    },
+    "/v1/document/transform-pipe": {
+      "post": {
+        "operationId": "DTAServer_TransformDocumentPipe",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dtaserviceTransformDocumentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/dtaserviceTransformDocumentPipeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DTAServer"
+        ]
+      }
+    },
+    "/v1/service/list": {
+      "get": {
+        "operationId": "DTAServer_ListServices",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dtaserviceListServicesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "DTAServer"
+        ]
+      }
+    },
+    "/v1/service/options": {
+      "get": {
+        "operationId": "DTAServer_Options",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dtaserviceOptionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "DTAServer"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "dtaserviceListServicesResponse": {
+      "type": "object",
+      "properties": {
+        "serviceInfos": {
+          "$ref": "#/definitions/dtaserviceServiceInfo"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "dtaserviceOptionsResponse": {
+      "type": "object",
+      "properties": {
+        "options": {
+          "type": "object"
+        }
+      }
+    },
+    "dtaserviceServiceInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "options": {
+          "type": "object"
+        }
+      }
+    },
+    "dtaserviceTransformDocumentPipeRequest": {
+      "type": "object",
+      "properties": {
+        "pipe": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dtaserviceTransformDocumentRequest"
+          }
+        }
+      }
+    },
+    "dtaserviceTransformDocumentRequest": {
+      "type": "object",
+      "properties": {
+        "file_name": {
+          "type": "string"
+        },
+        "document": {
+          "type": "string",
+          "format": "byte"
+        },
+        "service_name": {
+          "type": "string"
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "title": "The request message containing the document to be transformed"
+    },
+    "dtaserviceTransformDocumentResponse": {
+      "type": "object",
+      "properties": {
+        "document": {
+          "type": "string",
+          "format": "byte"
+        },
+        "trans_output": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "error": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "The response message containing the transformed message"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "protobufNullValue": {
+      "type": "string",
+      "enum": [
+        "NULL_VALUE"
+      ],
+      "default": "NULL_VALUE",
+      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
