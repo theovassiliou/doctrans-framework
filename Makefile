@@ -30,6 +30,7 @@ genfiles := ./dtaservice/*.pb.* "./swagger/dtaservice.swagger.json"
 LDFLAGS = -ldflags "-X main.version=${VERSION} -X main.commit=${COMMIT} -X main.branch=${BRANCH}"
 
 build: dtaservice/dtaservice.pb.go
+	@mkdir -p $(BIN_DIR)
 	go build ${LDFLAGS} -o ${BIN_DIR} ./...
 
 ./swagger/dtaservice.swagger.json dtaservice/dtaservice.pb.go: dtaservice/proto/dtaservice.proto
@@ -47,6 +48,7 @@ clean:
 ifneq ($(genfiles),)
 	rm -f $(genfiles)
 endif
+	rm -rf $(BIN_DIR)
 
 # Build the project
 all: clean build test-all vet
