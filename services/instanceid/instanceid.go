@@ -30,9 +30,8 @@ func init() {
 }
 
 const (
-	appName    = "DE.TU-BERLIN.INSTANCEID"
-	dtaType    = "Service"
-	miidPrefix = appName + "/" + "1.0" + "/"
+	appName = "DE.TU-BERLIN.INSTANCEID"
+	dtaType = "Service"
 )
 
 type serviceCmdLineOptions struct {

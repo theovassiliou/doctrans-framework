@@ -57,6 +57,16 @@ rehash
 - [Docker](https://www.docker.com/)
     To build and deploy services
 
+- [Vugu](https://www.vugu.org)
+    To build a [web front-end](./doc/adr/0013-providing-a-sample-web-front-end-for-using-dta-services.md)
+
+    Used the following steps to install the tools
+
+```shell
+go get -u github.com/vugu/vgrun
+vgrun -install-tools
+```
+
 ## Services used
 
-- <https://api.ipify.org> Rational:[6. Determine the public IP addresss](0005-inventory-of-used-libraries-and-tools.md) 
+- <https://api.ipify.org> Rational:[6. Determine the public IP addresss](0005-inventory-of-used-libraries-and-tools.md)
