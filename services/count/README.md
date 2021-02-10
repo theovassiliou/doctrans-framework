@@ -1,5 +1,15 @@
 # Count DTA Service
 
+The count service counts words, lines, and characters in a given text and returns a JSON object like
+
+```text
+{
+  "Bytes": 55,
+  "Lines": 3,
+  "Words": 11
+}
+```
+
 ## Short Name
 
 count
@@ -14,8 +24,8 @@ DE.TU-BERLIN.COUNT
   Usage: count [options]
 
   Protocols options:
-  --grpc, -g             Start service only with GRPC protocol support, if set
-  --http, -h             Start service only with HTTP protocol support, if set
+  --grpc, -g             Start service only with GRPC protocol support if set
+  --http, -h             Start service only with HTTP protocol support if set
   --port, -p             On which port (starting point) to listen for the supported protocol(s).
   --x-instance-id        Support X-Instance-Id disclosure on request.
 
@@ -40,6 +50,37 @@ DE.TU-BERLIN.COUNT
   --help                 display help
 ```
 
+## Example usage
+
+```shell
+bin/count -x test/testDoc.txt
+{
+  "Bytes": 55,
+  "Lines": 3,
+  "Words": 11
+}
+```
+
+## Example transformation
+
+The endpoint `/v1/document/transform`  transforms the document 
+
+```text
+This is a test file
+It has multiple lines
+Basically 3.
+```
+
+into
+
+```text
+{
+  "Bytes": 55,
+  "Lines": 3,
+  "Words": 11
+}
+```
+
 ## Implemented Options
 
 - GRPC-Service
@@ -53,7 +94,7 @@ DE.TU-BERLIN.COUNT
 - `/v1/document/transform`
 - `/v1/service/list`
 
-## Implmented without functionality
+## Implemented without functionality
 
 - `/v1/document/transform-pipe`
 - `/v1/document/transform-pipe`
