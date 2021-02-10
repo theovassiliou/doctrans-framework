@@ -20,8 +20,8 @@ import (
 
 // DocTransServerOptions describes communication related options that a DTS offers to the user
 type DocTransServerOptions struct {
-	GRPC         bool   `opts:"group=Protocols" help:"Start service only with GRPC protocol support, if set"`
-	HTTP         bool   `opts:"group=Protocols" help:"Start service only with HTTP protocol support, if set"`
+	GRPC         bool   `opts:"group=Protocols" help:"Start service only with GRPC protocol support if set"`
+	HTTP         bool   `opts:"group=Protocols" help:"Start service only with HTTP protocol support if set"`
 	Port         int    `opts:"group=Protocols" help:"On which port (starting point) to listen for the supported protocol(s)."`
 	XInstanceID  bool   `opts:"group=Protocols" help:"If set disable X-Instance-Id disclosure on request."` // my instance ID
 	HostName     string `opts:"group=Service" help:"If provided will be used as hostname, else automatically derived."`
