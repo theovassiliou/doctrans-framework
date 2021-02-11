@@ -131,8 +131,12 @@ func main() {
 			if err != nil || len(gService.Instances) == 0 {
 				log.Infof("Could not find a gateway %s at eureka\n", dtaGwID)
 			} else {
-				conf.ServiceAddress = gService.Instances[0].IpAddr + ":" + gService.Instances[0].Port.Port
-				log.Infof("Found one at %s \n", conf.ServiceAddress)
+				for _, i := range gService.Instances {
+					if strings.HasPrefix(i.HostName, "grpc") {
+						conf.ServiceAddress = gService.Instances[0].IpAddr + ":" + gService.Instances[0].Port.Port
+						log.Infof("Found one at %s \n", conf.ServiceAddress)
+					}
+				}
 			}
 		}
 	}
