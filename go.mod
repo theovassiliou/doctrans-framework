@@ -12,7 +12,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
-	github.com/theovassiliou/go-eureka-client v1.1.1
+	github.com/theovassiliou/go-eureka-client v1.1.2
 	github.com/xlab/treeprint v1.0.0
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	google.golang.org/genproto v0.0.0-20210122163508-8081c04a3579

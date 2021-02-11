@@ -1,5 +1,5 @@
 # list of servers to build
-servers := "./services/count" "./services/instanceid"
+servers := "./services/count" "./services/instanceid ./services/multiservices ./client/eurekabrowser"
 
 gofiles := $(subst ./services/,,$(servers))
 BINARY = doctrans-framework

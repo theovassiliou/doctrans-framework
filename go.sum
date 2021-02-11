@@ -78,6 +78,8 @@ github.com/stretchr/testify v1.5.1 h1:nOGnQDM7FYENwehXlg/kFVnos3rEvtKTjRvOWSzb6H
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/theovassiliou/go-eureka-client v1.1.1 h1:i2tYM9uz3jrZZ6qv4qFiDMMKUl6tRrQBkN/3LXv/i2I=
 github.com/theovassiliou/go-eureka-client v1.1.1/go.mod h1:ViT7D3pIkGboaAzy1t+VYt3nJ/SAGtIhpRkH+8bkrz8=
+github.com/theovassiliou/go-eureka-client v1.1.2 h1:j+bVEJHYmAqlREQHrfPeQcpy+9FwThtzxjoz4FChIR4=
+github.com/theovassiliou/go-eureka-client v1.1.2/go.mod h1:ViT7D3pIkGboaAzy1t+VYt3nJ/SAGtIhpRkH+8bkrz8=
 github.com/xlab/treeprint v1.0.0 h1:J0TkWtiuYgtdlrkkrDLISYBQ92M+X5m4LrIIMKrbDTs=
 github.com/xlab/treeprint v1.0.0/go.mod h1:IoImgRak9i3zJyuxOKUP1v4UZd1tMoKkq/Cimt1uhCg=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
