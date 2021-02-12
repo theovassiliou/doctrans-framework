@@ -117,14 +117,15 @@ func main() {
 
 		// Let's find out whether we find the server serving this service.
 		//  - ask for the service
-		eService, _ := client.GetApplication(conf.ServiceName)
+		eApplication, _ := client.GetApplication(conf.ServiceName)
 
-		g := &grpcInstance{
+		filter := &grpcInstanceFilter{
 			serviceName: conf.ServiceName,
 		}
-		eService.Accept(g)
-		if g.instance.HostName != "" {
-			conf.ServiceAddress = g.instance.IpAddr + ":" + g.instance.Port.Port
+		eApplication.Accept(filter)
+
+		if filter.instance.HostName != "" {
+			conf.ServiceAddress = filter.instance.IpAddr + ":" + filter.instance.Port.Port
 			log.Infof("Found one at %s for service %s\n", conf.ServiceAddress, conf.ServiceName)
 		} else {
 			log.Warnf("Could not find a service %s at eureka\n", conf.ServiceName)
@@ -135,12 +136,12 @@ func main() {
 			log.Infof("Looking for a gateway %s instead\n", dtaGwID)
 
 			gService, _ := client.GetApplication(dtaGwID)
-			g = &grpcInstance{
+			filter = &grpcInstanceFilter{
 				serviceName: dtaGwID,
 			}
-			gService.Accept(g)
-			if g.instance.HostName != "" {
-				conf.ServiceAddress = g.instance.IpAddr + ":" + g.instance.Port.Port
+			gService.Accept(filter)
+			if filter.instance.HostName != "" {
+				conf.ServiceAddress = filter.instance.IpAddr + ":" + filter.instance.Port.Port
 				log.Infof("Found one at %s \n", conf.ServiceAddress)
 			} else {
 				log.Fatalf("Could not find a gateway %s \n", dtaGwID)
@@ -196,12 +197,12 @@ func main() {
 	}
 }
 
-type grpcInstance struct {
+type grpcInstanceFilter struct {
 	serviceName string
 	instance    eureka.InstanceInfo
 }
 
-func (g *grpcInstance) VisitForApplication(a eureka.Application) {
+func (g *grpcInstanceFilter) VisitForApplication(a eureka.Application) {
 	if g.serviceName == a.Name {
 		for _, i := range a.Instances {
 			if strings.HasPrefix(i.HostName, "grpc") {
@@ -211,6 +212,6 @@ func (g *grpcInstance) VisitForApplication(a eureka.Application) {
 	}
 }
 
-func (g *grpcInstance) VisitForInstance(i eureka.InstanceInfo) {
+func (g *grpcInstanceFilter) VisitForInstance(i eureka.InstanceInfo) {
 
 }
