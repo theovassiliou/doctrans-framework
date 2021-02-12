@@ -117,30 +117,39 @@ func main() {
 
 		// Let's find out whether we find the server serving this service.
 		//  - ask for the service
-		eService, err := client.GetApplication(conf.ServiceName)
-		if err != nil || len(eService.Instances) == 0 {
-			log.Infof("Could not find the service %s at eureka\n", conf.ServiceName)
-		} else {
-			conf.ServiceAddress = eService.Instances[1].IpAddr + ":" + eService.Instances[1].Port.Port
+		eService, _ := client.GetApplication(conf.ServiceName)
+
+		g := &grpcInstance{
+			serviceName: conf.ServiceName,
 		}
+		eService.Accept(g)
+		if g.instance.HostName != "" {
+			conf.ServiceAddress = g.instance.IpAddr + ":" + g.instance.Port.Port
+			log.Infof("Found one at %s for service %s\n", conf.ServiceAddress, conf.ServiceName)
+		} else {
+			log.Warnf("Could not find a service %s at eureka\n", conf.ServiceName)
+		}
+
 		//  - if service is unknown ask for a gateway
 		if conf.ServiceAddress == "" {
-			log.Infof("Looking for a gateway %s \n", dtaGwID)
+			log.Infof("Looking for a gateway %s instead\n", dtaGwID)
 
-			gService, err := client.GetApplication(dtaGwID)
-			if err != nil || len(gService.Instances) == 0 {
-				log.Infof("Could not find a gateway %s at eureka\n", dtaGwID)
-			} else {
-				for _, i := range gService.Instances {
-					if strings.HasPrefix(i.HostName, "grpc") {
-						conf.ServiceAddress = gService.Instances[0].IpAddr + ":" + gService.Instances[0].Port.Port
-						log.Infof("Found one at %s \n", conf.ServiceAddress)
-					}
-				}
+			gService, _ := client.GetApplication(dtaGwID)
+			g = &grpcInstance{
+				serviceName: dtaGwID,
 			}
+			gService.Accept(g)
+			if g.instance.HostName != "" {
+				conf.ServiceAddress = g.instance.IpAddr + ":" + g.instance.Port.Port
+				log.Infof("Found one at %s \n", conf.ServiceAddress)
+			} else {
+				log.Fatalf("Could not find a gateway %s \n", dtaGwID)
+				return
+			}
+
 		}
 	}
-	log.Infof("Will contact %s for service for service %s\n", conf.ServiceAddress, conf.ServiceName)
+	log.Infof("Will contact %s for service %s\n", conf.ServiceAddress, conf.ServiceName)
 
 	//  - contact identified server
 
@@ -185,4 +194,23 @@ func main() {
 		fmt.Println(string(r.GetDocument()))
 		fmt.Printf("Received-Header: %#v\n", header)
 	}
+}
+
+type grpcInstance struct {
+	serviceName string
+	instance    eureka.InstanceInfo
+}
+
+func (g *grpcInstance) VisitForApplication(a eureka.Application) {
+	if g.serviceName == a.Name {
+		for _, i := range a.Instances {
+			if strings.HasPrefix(i.HostName, "grpc") {
+				g.instance = i
+			}
+		}
+	}
+}
+
+func (g *grpcInstance) VisitForInstance(i eureka.InstanceInfo) {
+
 }
