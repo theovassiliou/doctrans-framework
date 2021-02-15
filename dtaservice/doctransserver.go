@@ -24,7 +24,9 @@ type DocTransServerOptions struct {
 	HTTP         bool   `opts:"group=Protocols" help:"Start service only with HTTP protocol support if set"`
 	Port         int    `opts:"group=Protocols" help:"On which port (starting point) to listen for the supported protocol(s)."`
 	XInstanceID  bool   `opts:"group=Protocols" help:"If set disable X-Instance-Id disclosure on request."` // my instance ID
-	HostName     string `opts:"group=Service" help:"If provided will be used as hostname, else automatically derived."`
+	RegHostName  string `opts:"group=Service" help:"If provided will be used as hostname for registration, else automatically derived."`
+	RegIPAddress string `opts:"group=Service" help:"If provided will be used as ip-address for registration, else automatically derived."`
+	RegPort      string `opts:"group=Service" help:"If provided will be used as port for registration, else automatically derived."`
 	RegistrarURL string `opts:"group=Registrar" help:"Registry URL (ex http://eureka:8761/eureka). If set to \"\", no registration to eureka"`
 }
 
@@ -79,14 +81,23 @@ func LaunchServices(grpcGateway, httpGateway IDocTransServer, appName, dtaType, 
 	_initialPort := options.Port
 	// -- start listener and save used grpc port
 	_grpcListener, _grpcPort := CreateListener(_initialPort, 20)
-	_ipAddressUsed, _ := aux.ExternalIP()
-
+	var _ipAddressUsed string
+	if options.RegIPAddress != "" {
+		_ipAddressUsed = options.RegIPAddress
+	} else {
+		_ipAddressUsed, _ = aux.ExternalIP()
+	}
 	var registerGRPC, registerHTTP bool
 
+	var theGPort = _grpcPort
 	if grpcGateway != nil {
 		registerGRPC = true
 		gDTS = grpcGateway.GetDocTransServer()
-		gDTS.NewInstanceInfo(calcHostName("grpc", options.HostName), appName, _ipAddressUsed, _grpcPort,
+
+		if options.RegPort != "" {
+			theGPort, _ = strconv.Atoi(options.RegPort)
+		}
+		gDTS.NewInstanceInfo(calcHostName("grpc", options.RegHostName), appName, _ipAddressUsed, theGPort,
 			0, false, dtaType, "grpc",
 			homepageURL,
 			"",
@@ -100,11 +111,15 @@ func LaunchServices(grpcGateway, httpGateway IDocTransServer, appName, dtaType, 
 		// -- start listener and save used http port
 		_httpListener, _httpPort = CreateListener(_grpcPort+1, 20)
 		hDTS = httpGateway.GetDocTransServer()
-		hDTS.NewInstanceInfo(calcHostName("http", options.HostName), appName, _ipAddressUsed, _httpPort,
+		var theHPort = _httpPort
+		if options.RegPort != "" {
+			theHPort = theGPort + (_httpPort - _grpcPort)
+		}
+		hDTS.NewInstanceInfo(calcHostName("http", options.RegHostName), appName, _ipAddressUsed, theHPort,
 			0, false, dtaType, "http",
 			homepageURL,
-			calcStatusURL(options.HostName+":"+strconv.Itoa(_httpPort)),
-			calcHealthURL(options.HostName+":"+strconv.Itoa(_httpPort)))
+			calcStatusURL(options.RegHostName+":"+strconv.Itoa(_httpPort)),
+			calcHealthURL(options.RegHostName+":"+strconv.Itoa(_httpPort)))
 	}
 
 	var wg sync.WaitGroup

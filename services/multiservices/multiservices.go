@@ -68,7 +68,7 @@ func main() {
 	serviceOptions.CfgFile = workingHomeDir + "/.dta/" + cmdName + "/config.json"
 	serviceOptions.Port = 50000
 	serviceOptions.LogLevel = log.WarnLevel
-	serviceOptions.HostName = aux.GetHostname()
+	serviceOptions.RegHostName = aux.GetHostname()
 	serviceOptions.RegistrarURL = "http://eureka:8761/eureka"
 
 	opts.New(&serviceOptions).
