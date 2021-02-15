@@ -1,8 +1,14 @@
 # list of servers to build
-servers := "./services/count" "./services/instanceid ./services/multiservices ./client/eurekabrowser"
-
+servers := "./services/count" "./services/instanceid" "./services/multiservices"
+clients := "./client/eurekabrowser"
 gofiles := $(subst ./services/,,$(servers))
+dockerexes := $(subst ./services/,./docker/,$(servers))
+dockerfiles := $(subst ./services/,./docker/Dockerfile.,$(servers))
+services := $(subst ./services/,,$(servers))
+
+
 BINARY = doctrans-framework
+
 
 VERSION?=?
 
@@ -47,6 +53,9 @@ build: dtaservice/dtaservice.pb.go
 clean: 
 ifneq ($(genfiles),)
 	rm -f $(genfiles)
+endif
+ifneq ($(dockerexes),)
+	rm -f $(dockerexes)
 endif
 	rm -rf $(BIN_DIR)
 
@@ -94,6 +103,37 @@ check: fmtcheck vet
 .PHONY: test-all
 test-all: fmtcheck vet
 	go test ./...
+
+# DOCKERFILE AND DOCKERSERVICES MANAGEMENT
+
+docker: dockerexes
+
+.PHONY: dockerexes
+
+dockerexes:
+	@mkdir -p $(BIN_DIR)/docker
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ${BIN_DIR}/docker ./services/...
+
+# Creates template Dockerfile for building images
+docker-templates: 
+	for n in $(services); do \
+		rm -f docker/templates/Dockerfile.$$n.grpc; \
+		rm -f docker/templates/Dockerfile.$$n.html; \
+		rm -f docker/templates/Dockerfile.$$n.grpc+html; \
+		echo "FROM scratch" >> docker/templates/Dockerfile.$$n.grpc ; \
+		echo "EXPOSE 50000" >> docker/templates/Dockerfile.$$n.grpc ; \
+		echo "ADD \"./bin/docker/$$n"\" / >> docker/templates/Dockerfile.$$n.grpc ; \
+		echo "CMD [\"/$$n\", \"-a\", \"$$n\", \"--reg-host-name\", \"localhost\", \"--reg-ip-address\", \"192.168.178.60\",\"--reg-port\", \"60000\",\"-g\", \"--registrar-url\", \"http://192.168.178.60:8761/eureka\"]" >> docker/templates/Dockerfile.$$n.grpc ; \
+		echo "FROM scratch" >> docker/templates/Dockerfile.$$n.html ; \
+		echo "EXPOSE 50000" >> docker/templates/Dockerfile.$$n.html ; \
+		echo "ADD \"./bin/docker/$$n"\" / >> docker/templates/Dockerfile.$$n.html ; \
+		echo "CMD [\"/$$n\", \"-a\", \"$$n\", \"--reg-host-name\", \"localhost\", \"--reg-ip-address\", \"192.168.178.60\",\"--reg-port\", \"60000\",\"-h\", \"--registrar-url\", \"http://192.168.178.60:8761/eureka\"]" >> docker/templates/Dockerfile.$$n.html ; \
+		echo "FROM scratch" >> docker/templates/Dockerfile.$$n.grpc+html ; \
+		echo "EXPOSE 50000" >> docker/templates/Dockerfile.$$n.grpc+html ; \
+		echo "ADD \"./bin/docker/$$n"\" / >> docker/templates/Dockerfile.$$n.grpc+html ; \
+		echo "CMD [\"/$$n\", \"-a\", \"$$n\", \"--reg-host-name\", \"localhost\", \"--reg-ip-address\", \"192.168.178.60\",\"--reg-port\", \"60000\",\"-g\", \"--registrar-url\", \"http://192.168.178.60:8761/eureka\"]" >> docker/templates/Dockerfile.$$n.grpc+html ; \
+	done
+
 
 # with this command you can print the value of a Makefile variable
 # Example: make print-genfiles
