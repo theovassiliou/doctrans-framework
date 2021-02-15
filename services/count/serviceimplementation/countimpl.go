@@ -86,6 +86,11 @@ func (s *DtaService) ListServices(ctx context.Context, req *empty.Empty) (*pb.Li
 	log.WithFields(log.Fields{"Service": s.ApplicationName(), "Status": "ListServices"}).Infof("In know only myself: %s", s.ApplicationName())
 	services := (&pb.ListServicesResponse{}).Services
 	services = append(services, s.ApplicationName())
+	if s.XInstanceIDprefix != "" {
+		g := s.GetDocTransServer()
+		header := dtaservice.GetXinstanceIDHeader(&g)
+		grpc.SendHeader(ctx, header)
+	}
 	return &pb.ListServicesResponse{Services: services}, nil
 }
 

@@ -164,12 +164,14 @@ func main() {
 	defer cancel()
 
 	if conf.ListServices {
-		r, err := c.ListServices(ctx, &emptypb.Empty{})
+		var header metadata.MD
+		r, err := c.ListServices(ctx, &emptypb.Empty{}, grpc.Header(&header))
 		if err != nil {
 			log.Fatalf("could not list services: %v", err)
 		}
 
 		fmt.Println(strings.Join(r.GetServices(), "\n"))
+		fmt.Printf("Received-Header: %#v\n", header)
 		os.Exit(0)
 	}
 
