@@ -38,6 +38,7 @@ type serviceCmdLineOptions struct {
 	dta.DocTransServerOptions
 	dta.DocTransServerGenericOptions
 	LocalExecution string `opts:"group=Local Execution, short=x" help:"If set, execute the service locally once and read from this file"`
+	AppName        string `opts:"group=Service, short=a" help:"If set, using this name as service name"`
 }
 
 func main() {
@@ -57,13 +58,24 @@ func main() {
 		Version(dtaservice.FormatFullVersion(cmdName, version, branch, commit)).
 		Parse()
 
+	if serviceOptions.AppName != "" {
+		serviceOptions.CfgFile = workingHomeDir + "/.dta/" + serviceOptions.AppName + "/config.json"
+		opts.New(&serviceOptions).
+			Repo("github.com/theovassiliou/doctrans").
+			ConfigPath(serviceOptions.CfgFile).
+			Version(dtaservice.FormatFullVersion(cmdName, version, branch, commit)).
+			Parse()
+	} else {
+		serviceOptions.AppName = appName
+	}
+
 	if serviceOptions.LogLevel != 0 {
 		log.SetLevel(serviceOptions.LogLevel)
 	}
 
 	if serviceOptions.LocalExecution != "" {
 		s := service.DtaService{}
-		s.AppName = appName
+		s.AppName = serviceOptions.AppName
 		transDoc := service.ExecuteWorkerLocally(s, serviceOptions.LocalExecution)
 		fmt.Println(transDoc)
 		return
@@ -73,13 +85,13 @@ func main() {
 	// Calc Configuration
 	registerGRPC, registerHTTP := determineServerConfig(serviceOptions)
 	if registerGRPC {
-		_grpcGateway = newDtaService(serviceOptions, appName, "grpc")
+		_grpcGateway = newDtaService(serviceOptions, serviceOptions.AppName, "grpc")
 	}
 	if registerHTTP {
-		_httpGateway = newDtaService(serviceOptions, appName, "http")
+		_httpGateway = newDtaService(serviceOptions, serviceOptions.AppName, "http")
 	}
 
-	dta.LaunchServices(_grpcGateway, _httpGateway, appName, dtaType, homepageURL, serviceOptions.DocTransServerOptions)
+	dta.LaunchServices(_grpcGateway, _httpGateway, serviceOptions.AppName, dtaType, homepageURL, serviceOptions.DocTransServerOptions)
 }
 func newDtaService(options serviceCmdLineOptions, appName, proto string) dta.IDocTransServer {
 	gw := service.DtaService{
@@ -87,12 +99,12 @@ func newDtaService(options serviceCmdLineOptions, appName, proto string) dta.IDo
 			AppName:           appName,
 			DtaType:           dtaType,
 			Proto:             proto,
-			XInstanceIDprefix: buildXIIDprefix(),
+			XInstanceIDprefix: buildXIIDprefix(appName),
 		},
 	}
 	gw.AppName = appName
 	if !options.XInstanceID {
-		gw.XInstanceIDprefix = buildXIIDprefix()
+		gw.XInstanceIDprefix = buildXIIDprefix(appName)
 		gw.XInstanceIDstartTime = startTime
 	}
 	return &gw
@@ -109,6 +121,6 @@ func determineServerConfig(gwOptions serviceCmdLineOptions) (registerGRPC, regis
 	return
 }
 
-func buildXIIDprefix() string {
+func buildXIIDprefix(appName string) string {
 	return appName + "/" + version + "/" + branch + "-" + commit + "/"
 }
