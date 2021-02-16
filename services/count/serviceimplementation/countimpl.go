@@ -70,7 +70,7 @@ func (s *DtaService) TransformDocument(ctx context.Context, in *pb.TransformDocu
 	// create and send header
 	if s.XInstanceIDprefix != "" {
 		g := s.GetDocTransServer()
-		header := dtaservice.GetXinstanceIDHeader(&g)
+		header := dtaservice.GetXinstanceIDHeader(g)
 		grpc.SendHeader(ctx, header)
 	}
 
@@ -88,7 +88,7 @@ func (s *DtaService) ListServices(ctx context.Context, req *empty.Empty) (*pb.Li
 	services = append(services, s.ApplicationName())
 	if s.XInstanceIDprefix != "" {
 		g := s.GetDocTransServer()
-		header := dtaservice.GetXinstanceIDHeader(&g)
+		header := dtaservice.GetXinstanceIDHeader(g)
 		grpc.SendHeader(ctx, header)
 	}
 	return &pb.ListServicesResponse{Services: services}, nil
@@ -101,8 +101,8 @@ func (*DtaService) Options(ctx context.Context, req *empty.Empty) (*pb.OptionsRe
 	return nil, status.Errorf(codes.Unimplemented, "method Options not implemented")
 }
 
-func (s *DtaService) GetDocTransServer() pb.GenDocTransServer {
-	return s.GenDocTransServer
+func (s *DtaService) GetDocTransServer() *pb.GenDocTransServer {
+	return &s.GenDocTransServer
 }
 
 func counter(r io.Reader, sep []byte) (int, error) {

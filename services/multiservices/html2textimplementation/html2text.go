@@ -47,7 +47,7 @@ func (s *DtaService) TransformDocument(ctx context.Context, in *pb.TransformDocu
 	// create and send header
 	if s.XInstanceIDprefix != "" {
 		g := s.GetDocTransServer()
-		header := dtaservice.GetXinstanceIDHeader(&g)
+		header := dtaservice.GetXinstanceIDHeader(g)
 		grpc.SendHeader(ctx, header)
 	}
 
@@ -78,8 +78,8 @@ func (*DtaService) Options(ctx context.Context, req *empty.Empty) (*pb.OptionsRe
 }
 
 // GetDocTransServer returns the server instance of this service
-func (s *DtaService) GetDocTransServer() pb.GenDocTransServer {
-	return s.GenDocTransServer
+func (s *DtaService) GetDocTransServer() *pb.GenDocTransServer {
+	return &s.GenDocTransServer
 }
 
 func Work(s *DtaService, input []byte, options *structpb.Struct) (string, []string, error) {

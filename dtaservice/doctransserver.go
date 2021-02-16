@@ -39,7 +39,7 @@ type DocTransServerGenericOptions struct {
 
 // IDocTransServer specifies the interfaces a DocTransServer must implement
 type IDocTransServer interface {
-	GetDocTransServer() GenDocTransServer
+	GetDocTransServer() *GenDocTransServer
 	DTAServerServer
 }
 
@@ -51,8 +51,9 @@ type GenDocTransServer struct {
 	XInstanceIDprefix    string `opts:"instance-id"` // my instance ID
 	XInstanceIDstartTime time.Time
 
-	registrar    *eureka.Client
-	instanceInfo *eureka.InstanceInfo
+	resolver     *eureka.Client       // the inner-cadaster
+	registrar    *eureka.Client       // the outer-cadaster
+	instanceInfo *eureka.InstanceInfo // describing the wormhole
 	heartBeatJob *scheduler.Job
 	// UnimplementedDTAServerServer
 }
@@ -92,7 +93,7 @@ func LaunchServices(grpcGateway, httpGateway IDocTransServer, appName, dtaType, 
 	var theGPort = _grpcPort
 	if grpcGateway != nil {
 		registerGRPC = true
-		gDTS = grpcGateway.GetDocTransServer()
+		gDTS = *grpcGateway.GetDocTransServer()
 
 		if options.RegPort != "" {
 			theGPort, _ = strconv.Atoi(options.RegPort)
@@ -110,7 +111,7 @@ func LaunchServices(grpcGateway, httpGateway IDocTransServer, appName, dtaType, 
 		// -- take GRPC port + 1
 		// -- start listener and save used http port
 		_httpListener, _httpPort = CreateListener(_grpcPort+1, 20)
-		hDTS = httpGateway.GetDocTransServer()
+		hDTS = *httpGateway.GetDocTransServer()
 		var theHPort = _httpPort
 		if options.RegPort != "" {
 			theHPort = theGPort + (_httpPort - _grpcPort)
@@ -152,6 +153,13 @@ func LaunchServices(grpcGateway, httpGateway IDocTransServer, appName, dtaType, 
 	}
 
 	wg.Wait()
+}
+func (dtas *GenDocTransServer) GetResolver() *eureka.Client {
+	return dtas.resolver
+}
+
+func (dtas *GenDocTransServer) SetResolver(e *eureka.Client) {
+	dtas.resolver = e
 }
 
 // ----- Default implementations of DTA functions
