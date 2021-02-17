@@ -3,6 +3,7 @@ package main
 // A simple implemenation of using the Golang DocTrans Framework
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jpillora/opts"
@@ -122,5 +123,18 @@ func determineServerConfig(gwOptions serviceCmdLineOptions) (registerGRPC, regis
 }
 
 func buildXIIDprefix(appName string) string {
-	return appName + "/" + version + "/" + branch + "-" + commit + "/"
+	branchB := strings.Builder{}
+	if branch != "" || commit != "" {
+		branchB.WriteString("/")
+	}
+	if branch != "" {
+		branchB.WriteString(branch)
+	}
+
+	if commit != "" {
+		branchB.WriteString("-")
+		branchB.WriteString(commit)
+	}
+
+	return appName + "/" + version + branchB.String() + "%"
 }

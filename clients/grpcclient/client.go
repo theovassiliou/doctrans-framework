@@ -39,6 +39,7 @@ import (
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	dta "github.com/theovassiliou/doctrans-framework/dtaservice"
 	pb "github.com/theovassiliou/doctrans-framework/dtaservice"
+	"github.com/theovassiliou/doctrans-framework/instanceid"
 
 	"github.com/theovassiliou/go-eureka-client/eureka"
 	"google.golang.org/grpc"
@@ -195,7 +196,14 @@ func main() {
 		}
 		fmt.Println(fN)
 		fmt.Println(string(r.GetDocument()))
-		fmt.Printf("Received-Header: %#v\n", header)
+		ids := header.Get("X-Instance-Id")
+		if len(ids) > 0 {
+			theCiid := instanceid.NewCiid(ids[0])
+			fmt.Printf("The response was received from \n%v", instanceid.PrintCiid(theCiid))
+		} else {
+			fmt.Printf("Received-Header: %#v\n", header)
+
+		}
 	}
 }
 
