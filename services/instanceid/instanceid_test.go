@@ -91,7 +91,7 @@ func TestCountDtaGet(t *testing.T) {
 		{
 			"list",
 			"/v1/service/list",
-			`{"services":["DE.TU-BERLIN.INSTANCEID"]}`,
+			`{"services":["INSTANCEID"]}`,
 			200,
 		},
 		{
@@ -102,7 +102,7 @@ func TestCountDtaGet(t *testing.T) {
 		},
 	}
 
-	//	_httpPort := startServer()
+	_httpPort := startServer()
 
 	for _, tt := range tests {
 

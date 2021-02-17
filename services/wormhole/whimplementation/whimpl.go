@@ -2,7 +2,6 @@ package whimplementation
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"google.golang.org/grpc"
@@ -15,6 +14,7 @@ import (
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	pb "github.com/theovassiliou/doctrans-framework/dtaservice"
 	"github.com/theovassiliou/doctrans-framework/instanceid"
+	"github.com/theovassiliou/doctrans-framework/sympan"
 	"github.com/theovassiliou/go-eureka-client/eureka"
 )
 
@@ -23,6 +23,7 @@ type Wormhole struct {
 	pb.UnimplementedDTAServerServer
 	pb.GenDocTransServer
 	pb.IDocTransServer
+	Scope string
 }
 
 // TransformDocument looks up the requested services via the resolver and forwards the request to the resolved service.
@@ -33,43 +34,28 @@ func (dtas *Wormhole) TransformDocument(ctx context.Context, in *pb.TransformDoc
 	//  fqServiceName := fromMessage
 	fqServiceName := in.GetServiceName()
 	var theSelectedInstance eureka.InstanceInfo
-	cont := true
+	theSelectedInstance, err := sympan.WormholeResolveApplication(resolver, dtas.Scope, fqServiceName, "grpc", true)
 
-	for cont {
-		// from resolver: look for application
-		// 		applicationExist := resolver.GetApplication(fqServiceName)
-		app, err := resolver.GetApplication(fqServiceName)
-		log.WithFields(log.Fields{"Service": dtas.AppName, "Status": "TransformDocument"}).Debugf("looking for %s", fqServiceName)
-		log.WithFields(log.Fields{"Service": dtas.AppName, "Status": "TransformDocument"}).Debugf("apps %s has %v instances", app.Name, len(app.Instances))
-		if err != nil || app == nil || len(app.Instances) <= 0 {
-			log.WithFields(log.Fields{"Service": dtas.AppName, "Status": "TransformDocument"}).Fatalf("could not connect to resolver: %v", err)
-			return nil, err
-		}
-		if app != nil && len(app.Instances) > 0 {
-			theSelectedInstance = selectOneOf(app.Instances)
-			return forwardRequest(dtas, theSelectedInstance, ctx, in)
-		}
+	if err != nil {
+		var theError []string
 
-		fqServiceName = shortenFQName(fqServiceName)
-		if len(fqServiceName) > 0 {
-			fqServiceName = fqServiceName + ".WH"
+		if err.Error() == "not found" {
+			theError = append(theError, "could not resolve service")
 		} else {
-			cont = false
+			theError = append(theError, err.Error())
 		}
+		theError = append(theError, "Could not find service "+in.GetServiceName())
+		return &pb.TransformDocumentResponse{
+			Document:    []byte{},
+			TransOutput: []string{},
+			Error:       theError,
+		}, nil
 	}
 
-	return nil, nil
+	return forwardRequest(ctx, dtas, theSelectedInstance, in)
 }
 
-func shortenFQName(fqName string) string {
-	fqName = strings.TrimSuffix(fqName, ".")
-	elements := strings.Split(fqName, ".")
-	fqName = strings.Join(elements[:len(elements)-1], ".")
-	fqName = strings.TrimSuffix(fqName, ".")
-	return fqName
-}
-
-func forwardRequest(dtas *Wormhole, theSelectedInstance eureka.InstanceInfo, ctx context.Context, in *pb.TransformDocumentRequest) (*pb.TransformDocumentResponse, error) {
+func forwardRequest(ctx context.Context, dtas *Wormhole, theSelectedInstance eureka.InstanceInfo, in *pb.TransformDocumentRequest) (*pb.TransformDocumentResponse, error) {
 	conn, err := grpc.Dial(theSelectedInstance.IpAddr+":"+theSelectedInstance.Port.Port, grpc.WithInsecure())
 	if err != nil {
 		log.WithFields(log.Fields{"Service": dtas.AppName, "Status": "TransformDocument"}).Fatalf("did not connect: %v", err)
@@ -112,19 +98,6 @@ func forwardRequest(dtas *Wormhole, theSelectedInstance eureka.InstanceInfo, ctx
 	}
 	return r, err
 
-}
-
-func selectOneOf(instances []eureka.InstanceInfo) eureka.InstanceInfo {
-
-	// TODO: Find a better selection mechanism
-	if len(instances) > 0 {
-		for _, i := range instances {
-			if strings.HasPrefix(i.HostName, "grpc@") {
-				return i
-			}
-		}
-	}
-	return eureka.InstanceInfo{}
 }
 
 // ListServices returns all the services visible for this gateway via the resolver

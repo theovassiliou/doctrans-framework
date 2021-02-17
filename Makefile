@@ -1,5 +1,5 @@
 # list of servers to build
-servers := "./services/count" "./services/instanceid" "./services/multiservices"
+servers := "./services/count" "./services/instanceid" "./services/multiservices" "./services/wormhole"
 clients := "./client/eurekabrowser"
 gofiles := $(subst ./services/,,$(servers))
 dockerexes := $(subst ./services/,./docker/,$(servers))
@@ -131,7 +131,7 @@ docker-templates:
 		echo "FROM scratch" >> docker/templates/Dockerfile.$$n.grpc+html ; \
 		echo "EXPOSE 50000" >> docker/templates/Dockerfile.$$n.grpc+html ; \
 		echo "ADD \"./bin/docker/$$n"\" / >> docker/templates/Dockerfile.$$n.grpc+html ; \
-		echo "CMD [\"/$$n\", \"-a\", \"$$n\", \"--reg-host-name\", \"localhost\", \"--reg-ip-address\", \"192.168.178.60\",\"--reg-port\", \"60000\",\"-g\", \"--registrar-url\", \"http://192.168.178.60:8761/eureka\"]" >> docker/templates/Dockerfile.$$n.grpc+html ; \
+		echo "CMD [\"/$$n\", \"-a\", \"$$n\", \"--reg-host-name\", \"localhost\", \"--reg-ip-address\", \"192.168.178.60\",\"--reg-port\", \"60000\", \"--registrar-url\", \"http://192.168.178.60:8761/eureka\"]" >> docker/templates/Dockerfile.$$n.grpc+html ; \
 	done
 
 

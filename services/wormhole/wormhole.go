@@ -32,6 +32,7 @@ func init() {
 const (
 	appName = "DE.TU-BERLIN.WH"
 	dtaType = "Gateway"
+	scope   = "DE.TU-BERLIN"
 )
 
 var resolver *eureka.Client
@@ -51,8 +52,8 @@ func main() {
 	gwOptions.CfgFile = workingHomeDir + "/.dta/" + appName + "/config.json"
 	gwOptions.LogLevel = log.WarnLevel
 	gwOptions.RegHostName = aux.GetHostname()
-	gwOptions.ResolverURL = "http://eureka:8761/eureka"
-	gwOptions.RegistrarURL = "http://eureka:8762/eureka"
+	gwOptions.RegistrarURL = "http://eureka:8761/eureka"
+	gwOptions.ResolverURL = "http://eureka:8762/eureka"
 
 	opts.New(&gwOptions).
 		Repo("github.com/theovassiliou/doctrans").
@@ -78,10 +79,10 @@ func main() {
 	// Calc Configuration
 	registerGRPC, registerHTTP := determineServerConfig(gwOptions)
 	if registerGRPC {
-		_grpcGateway = newWormholeService(gwOptions, gwOptions.appName, "grpc")
+		_grpcGateway = newWormholeService(gwOptions, scope, gwOptions.appName, "grpc")
 	}
 	if registerHTTP {
-		_httpGateway = newWormholeService(gwOptions, gwOptions.appName, "http")
+		_httpGateway = newWormholeService(gwOptions, scope, gwOptions.appName, "http")
 	}
 
 	// create client resolver
@@ -92,14 +93,12 @@ func main() {
 	dta.LaunchServices(_grpcGateway, _httpGateway, gwOptions.appName, dtaType, homepageURL, gwOptions.DocTransServerOptions)
 }
 
-func newWormholeService(options whCmdLineOptions, appName, proto string) dta.IDocTransServer {
+func newWormholeService(options whCmdLineOptions, scope, appName, proto string) dta.IDocTransServer {
 	gw := wh.Wormhole{
-		GenDocTransServer: dta.GenDocTransServer{
-			AppName:           appName,
-			DtaType:           dtaType,
-			Proto:             proto,
-			XInstanceIDprefix: buildXIIDprefix(appName),
-		},
+		UnimplementedDTAServerServer: dta.UnimplementedDTAServerServer{},
+		GenDocTransServer:            dta.GenDocTransServer{AppName: appName, DtaType: dtaType, Proto: proto, XInstanceIDprefix: buildXIIDprefix(appName)},
+		IDocTransServer:              nil,
+		Scope:                        scope,
 	}
 	gw.AppName = appName
 	if !options.XInstanceID {

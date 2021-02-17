@@ -40,6 +40,7 @@ import (
 	dta "github.com/theovassiliou/doctrans-framework/dtaservice"
 	pb "github.com/theovassiliou/doctrans-framework/dtaservice"
 	"github.com/theovassiliou/doctrans-framework/instanceid"
+	"github.com/theovassiliou/doctrans-framework/sympan"
 
 	"github.com/theovassiliou/go-eureka-client/eureka"
 	"google.golang.org/grpc"
@@ -81,7 +82,7 @@ func check(e error) {
 	}
 }
 
-const dtaGwID = "BERLIN.VASSILIOU-POHL.GW"
+const dtaGwID = "DE.TU-BERLIN.WH"
 
 func main() {
 	conf = config{
@@ -134,7 +135,9 @@ func main() {
 
 		//  - if service is unknown ask for a gateway
 		if conf.ServiceAddress == "" {
-			log.Infof("Looking for a gateway %s instead\n", dtaGwID)
+			log.Tracef("Building WH name from %v", conf.ServiceName)
+			dtaGwID := sympan.BuildFQWormhole(conf.ServiceName)
+			log.Infof("Looking for a wormhole %s instead\n", dtaGwID)
 
 			gService, _ := client.GetApplication(dtaGwID)
 			filter = &grpcInstanceFilter{

@@ -21,4 +21,28 @@ services:
     - count
     - --registrar-url
     - http://eureka:8761/eureka
+  wormhole:
+    depends_on: 
+      - eureka
+    container_name: wormhole_grpc_html
+    restart: always
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.wormhole.grpc+html
+    ports:
+      - "60000:60000"
+    entrypoint:
+    - /wormhole
+    - --registrar-url
+    - http://192.168.178.60:8761/eureka
+    - --reg-host-name
+    - localhost
+    - --reg-ip-address
+    - 192.168.178.60
+    - --reg-port
+    - "60000"
+    - -p
+    - "60000"
+    - -l
+    - debug
         
