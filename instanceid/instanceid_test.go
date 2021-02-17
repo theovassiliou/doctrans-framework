@@ -506,6 +506,14 @@ func TestCiid_String(t *testing.T) {
 			"msA/1.1%22s",
 		},
 		{
+			"simpleMiid zero seconds",
+			"SS/1.2/YY%0s",
+		},
+		{
+			"simpleMiid minus seconds",
+			"SS/1.2/YY%-1s",
+		},
+		{
 			"fullMiid",
 			"msA/1.1/feature-branch-22aabbcc%22s",
 		},
@@ -558,6 +566,19 @@ func TestNewCiid(t *testing.T) {
 					Vn: "1.1",
 					Va: "",
 					T:  22,
+				},
+				nil,
+			},
+		},
+		{
+			"simpleMiid2",
+			args{"SS/1.2/YY%0s"},
+			Ciid{
+				Miid{
+					Sn: "SS",
+					Vn: "1.2",
+					Va: "YY",
+					T:  0,
 				},
 				nil,
 			},

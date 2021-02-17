@@ -83,15 +83,14 @@ func (c *Ciid) String() string {
 
 func (m *Miid) String() string {
 	sB := strings.Builder{}
-
-	sB.WriteString(m.Sn)
-	if m.Vn != "" {
-		sB.WriteString("/" + m.Vn)
-	}
-	if m.Va != "" {
-		sB.WriteString("/" + m.Va)
-	}
-	if m.T != 0 {
+	if m.Sn != "" {
+		sB.WriteString(m.Sn)
+		if m.Vn != "" {
+			sB.WriteString("/" + m.Vn)
+		}
+		if m.Va != "" {
+			sB.WriteString("/" + m.Va)
+		}
 		sB.WriteString("%" + strconv.Itoa(m.T) + "s")
 	}
 	return sB.String()

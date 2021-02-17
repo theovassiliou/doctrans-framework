@@ -93,13 +93,16 @@ func forwardRequest(dtas *Wormhole, theSelectedInstance eureka.InstanceInfo, ctx
 		g := dtas.GetDocTransServer()
 		myMiid := dtaservice.CreateMiid(g)
 		ciidString := reqHeader.Get("X-Instance-Id")
-		log.Println(ciidString)
 		var ciids []instanceid.Ciid
 
-		for _, c := range ciidString {
-			ciids = append(ciids, instanceid.NewCiid(c))
+		if len(ciidString) == 0 { // No X-Instance-Id provided
+			c := instanceid.NewCiid(theSelectedInstance.App + "/na/%-1s")
+			ciids = append(ciids, c)
+		} else {
+			for _, c := range ciidString {
+				ciids = append(ciids, instanceid.NewCiid(c))
+			}
 		}
-
 		myCiid := instanceid.Ciid{
 			Miid:  myMiid,
 			Ciids: ciids,
