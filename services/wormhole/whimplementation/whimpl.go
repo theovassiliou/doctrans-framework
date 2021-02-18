@@ -29,9 +29,6 @@ type Wormhole struct {
 // TransformDocument looks up the requested services via the resolver and forwards the request to the resolved service.
 func (dtas *Wormhole) TransformDocument(ctx context.Context, in *pb.TransformDocumentRequest) (*pb.TransformDocumentResponse, error) {
 	resolver := dtas.GetResolver()
-
-	// from message: which application is requested? (fully qualified service name)
-	//  fqServiceName := fromMessage
 	fqServiceName := in.GetServiceName()
 	var theSelectedInstance eureka.InstanceInfo
 	theSelectedInstance, err := sympan.WormholeResolveApplication(resolver, dtas.Scope, fqServiceName, "grpc", true)
@@ -51,7 +48,6 @@ func (dtas *Wormhole) TransformDocument(ctx context.Context, in *pb.TransformDoc
 			Error:       theError,
 		}, nil
 	}
-
 	return forwardRequest(ctx, dtas, theSelectedInstance, in)
 }
 

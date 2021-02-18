@@ -2,17 +2,17 @@ version: '3'
 services:
   eureka:
      image: aista/eureka
-     container_name: eureka-intern
+     container_name: acme_eureka-intern
      restart: always
      ports:
       - "9761:8761"
   count:
     depends_on: 
       - eureka
-    container_name: count_grpc
+    container_name: acme_count_grpc
     restart: always
     build:
-      context: ../
+      context: ../../
       dockerfile: docker/Dockerfile.count.grpc
     entrypoint:
     - /count
@@ -32,12 +32,13 @@ services:
       - REGPORT
       - PORTMAPPING_GRPC
       - PORTMAPPING_HTML
+      - PORT
     depends_on: 
       - eureka
-    container_name: wormhole_grpc_html
+    container_name: acme_wormhole_grpc_html
     restart: always
     build:
-      context: ../
+      context: ../../
       dockerfile: docker/Dockerfile.wormhole.grpc+html
     ports:
       - ${PORTMAPPING_GRPC}
@@ -55,7 +56,7 @@ services:
     - --reg-port
     - ${REGPORT}
     - --port
-    - ${REGPORT}
+    - ${PORT}
     - --log-level
     - ${LOGLEVEL}
         

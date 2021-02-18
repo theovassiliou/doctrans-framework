@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	dta "github.com/theovassiliou/doctrans-framework/dtaservice"
+	"github.com/theovassiliou/doctrans-framework/instanceid"
 	aux "github.com/theovassiliou/doctrans-framework/ipaux"
 	wh "github.com/theovassiliou/doctrans-framework/services/wormhole/whimplementation"
 )
@@ -42,6 +43,7 @@ type whCmdLineOptions struct {
 	dta.DocTransServerGenericOptions
 	ResolverURL          string `opts:"group=Resolver" help:"Resolver URL"`
 	ResolverRegistration bool   `opts:"group=Resolver" help:"Register in addition also to the resolver"`
+	Scope                string `opts:"group=Wormhole" help:"Defines the namespace of the galaxy this wormhole is service"`
 	appName              string
 }
 
@@ -53,7 +55,8 @@ func main() {
 	gwOptions.LogLevel = log.WarnLevel
 	gwOptions.RegHostName = aux.GetHostname()
 	gwOptions.RegistrarURL = "http://eureka:8761/eureka"
-	gwOptions.ResolverURL = "http://eureka:8762/eureka"
+	gwOptions.ResolverURL = "http://eureka:8761/eureka"
+	gwOptions.Scope = scope
 
 	opts.New(&gwOptions).
 		Repo("github.com/theovassiliou/doctrans").
@@ -63,6 +66,10 @@ func main() {
 
 	if gwOptions.LogLevel != 0 {
 		log.SetLevel(gwOptions.LogLevel)
+	}
+
+	if gwOptions.Scope != scope {
+		gwOptions.appName = strings.TrimSuffix(gwOptions.Scope, ".") + ".WH"
 	}
 
 	if gwOptions.appName != "" {
@@ -75,14 +82,15 @@ func main() {
 	} else {
 		gwOptions.appName = appName
 	}
+
 	var _grpcGateway, _httpGateway dta.IDocTransServer
 	// Calc Configuration
 	registerGRPC, registerHTTP := determineServerConfig(gwOptions)
 	if registerGRPC {
-		_grpcGateway = newWormholeService(gwOptions, scope, gwOptions.appName, "grpc")
+		_grpcGateway = newWormholeService(gwOptions, gwOptions.Scope, gwOptions.appName, "grpc")
 	}
 	if registerHTTP {
-		_httpGateway = newWormholeService(gwOptions, scope, gwOptions.appName, "http")
+		_httpGateway = newWormholeService(gwOptions, gwOptions.Scope, gwOptions.appName, "http")
 	}
 
 	// create client resolver
@@ -96,13 +104,13 @@ func main() {
 func newWormholeService(options whCmdLineOptions, scope, appName, proto string) dta.IDocTransServer {
 	gw := wh.Wormhole{
 		UnimplementedDTAServerServer: dta.UnimplementedDTAServerServer{},
-		GenDocTransServer:            dta.GenDocTransServer{AppName: appName, DtaType: dtaType, Proto: proto, XInstanceIDprefix: buildXIIDprefix(appName)},
+		GenDocTransServer:            dta.GenDocTransServer{AppName: appName, DtaType: dtaType, Proto: proto, XInstanceIDprefix: instanceid.BuildVBC(appName, version, branch, commit)},
 		IDocTransServer:              nil,
 		Scope:                        scope,
 	}
 	gw.AppName = appName
 	if !options.XInstanceID {
-		gw.XInstanceIDprefix = buildXIIDprefix(appName)
+		gw.XInstanceIDprefix = instanceid.BuildVBC(appName, version, branch, commit)
 		gw.XInstanceIDstartTime = startTime
 	}
 	return &gw
@@ -117,21 +125,4 @@ func determineServerConfig(gwOptions whCmdLineOptions) (registerGRPC, registerHT
 		registerHTTP = true
 	}
 	return
-}
-
-func buildXIIDprefix(appName string) string {
-	branchB := strings.Builder{}
-	if branch != "" || commit != "" {
-		branchB.WriteString("/")
-	}
-	if branch != "" {
-		branchB.WriteString(branch)
-	}
-
-	if commit != "" {
-		branchB.WriteString("-")
-		branchB.WriteString(commit)
-	}
-
-	return appName + "/" + version + branchB.String() + "%"
 }

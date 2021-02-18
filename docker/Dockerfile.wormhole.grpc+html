@@ -1,4 +1,5 @@
 FROM scratch
 EXPOSE 60000
+EXPOSE 60001
 ADD "./bin/docker/wormhole" /
 CMD ["/wormhole", "-a", "wormhole", "--reg-host-name", "localhost", "--reg-ip-address", "192.168.178.60","--reg-port", "60000", "--registrar-url", "http://192.168.178.60:8761/eureka" "--resolver-url", "http://eureka:8761/eureka"]

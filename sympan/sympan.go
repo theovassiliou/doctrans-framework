@@ -63,10 +63,11 @@ func WormholeResolveApplication(resolver *eureka.Client, scope, fqServiceName, p
 	theSelectedInstance := eureka.InstanceInfo{}
 
 	serviceName := strings.TrimPrefix(fqServiceName, scope+".")
-
 	app, err := resolver.GetApplication(serviceName)
+
 	if err != nil {
-		return ResolveApplication(resolver, fqServiceName, proto, includeWormholes)
+		i, err := ResolveApplication(resolver, fqServiceName, proto, includeWormholes)
+		return i, err
 	}
 
 	if app != nil && len(app.Instances) > 0 {
