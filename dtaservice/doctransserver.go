@@ -152,6 +152,8 @@ func LaunchServices(grpcGateway, httpGateway IDocTransServer, appName, dtaType, 
 		wg.Add(1)
 	}
 
+	grpcGateway.GetDocTransServer().SetResolver(gDTS.registrar)
+
 	wg.Wait()
 }
 func (dtas *GenDocTransServer) GetResolver() *eureka.Client {
