@@ -31,7 +31,7 @@ func init() {
 }
 
 const (
-	appName = "DE.TU-BERLIN.COUNT"
+	appName = "COUNT"
 	dtaType = "Service"
 )
 
