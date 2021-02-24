@@ -1,0 +1,3 @@
+FROM scratch
+EXPOSE 50000
+ADD "./bin/docker/multiservices" /
