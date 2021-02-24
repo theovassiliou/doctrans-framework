@@ -1,26 +1,23 @@
-# InstanceID DTA Service
+# Multiservice DTA Service
 
-The InstanceID service translates an instanceID into a visual tree representation like
+The multiservice serves as an example for implementing multiple DTA services in one executable.
+Multiservice implements an `Echo` and an `HTML2Text` service. For testing purposes, each service can be called locally. 
 
-```text
-.
-└── [88s]  MsA/1.1
-    ├── [5555s]  msC/1.4
-    └── [23234s]  msD/2.2
-```
+- Echo service: The echo service replies to the content that has been sent to it
+- HTML2Text service: The HTML2Text service translates an HTML document passed to it to its textual representation, link, and tabular information is tried to be preserved.
 
 ## Short Name
 
-instanceid
+multiservice
 
 ## Full App Name
 
-DE.TU-BERLIN.INSTANCEID
+MULTISERVICE
 
 ## Description
 
 ```text
-  Usage: instanceid [options]
+  Usage: multiservices [options]
 
   Protocols options:
   --grpc, -g             Start service only with GRPC protocol support if set
@@ -30,54 +27,73 @@ DE.TU-BERLIN.INSTANCEID
   --x-instance-id        If set disable X-Instance-Id disclosure on request.
 
   Service options:
-  --host-name            If provided will be used as hostname, else automatically derived. (default
-                         Theofaniss-iMac.fritz.box)
+  --reg-host-name, -r    If provided will be used as hostname for registration, else automatically
+                         derived. (default Theofaniss-iMac.fritz.box)
+  --reg-ip-address       If provided will be used as ip-address for registration, else automatically
+                         derived.
+  --reg-port             If provided will be used as port for registration, else automatically
+                         derived.
 
   Registrar options:
-  --registrar-url, -r    Registry URL (ex http://eureka:8761/eureka). If set to "", no registration
+  --registrar-url        Registry URL (ex http://eureka:8761/eureka). If set to "", no registration
                          to eureka (default http://eureka:8761/eureka)
 
   Generic options:
   --log-level, -l        Log level, one of panic, fatal, error, warn or warning, info, debug, trace
                          (default warning)
-  --cfg-file, -c         The config file to use (default /Users/the/.dta/DE.TU-BERLIN.INSTANCEID/config.json)
+  --cfg-file, -c         The config file to use (default /Users/the/.dta/multiservice/config.json)
   --init, -i             Create a default config file as defined by cfg-file, if set. If not set
                          ~/.dta/{AppName}/config.json will be created.
 
   Local Execution options:
   --local-execution, -x  If set, execute the service locally once and read from this file
+  --htm-l2-text, -1      If set, use HTML2TEXT service
+  --echo, -2             If set, use ECHO service
 
   Options:
   --version, -v          display version
   --help                 display help
 
   Version:
-    instanceid unknown (git: main 352e3bf)
+    multiservice unknown (git: dockerize f4d99cd)
 
   Read more:
     github.com/theovassiliou/doctrans
 ```
 
-## Example usage
+## Echo Example usage
 
 ```shell
-bin/count -x test/testDoc.txt
-{
-  "Bytes": 55,
-  "Lines": 3,
-  "Words": 11
-}
+bin/multiservice -2 -x test/testDoc.txt
+This is a test file
+It has multiple lines
+Basically 3.
 ```
 
-## Example transformation
+## HTML2Text Example usage
 
-The endpoint `/v1/document/transform`  transforms the instanceId `MsA/1.1/dev-git22%88s(msC/1.4%5555s+msD/2.2%23234s)` into
+```shell
+bin/multiservice -1 -x test/html1.txt
+Mega Service ( http://jaytaylor.com/ )
 
-```text
-.
-└── [88s]  MsA/1.1
-    ├── [5555s]  msC/1.4
-    └── [23234s]  msD/2.2
+******************************************
+Welcome to your new account on my service!
+******************************************
+
+Here is some more information:
+
+* Link 1: Example.com ( https://example.com )
+* Link 2: Example2.com ( https://example2.com )
+* Something else
+
++-------------+-------------+
+|  HEADER 1   |  HEADER 2   |
++-------------+-------------+
+| Row 1 Col 1 | Row 1 Col 2 |
+| Row 2 Col 1 | Row 2 Col 2 |
++-------------+-------------+
+|  FOOTER 1   |  FOOTER 2   |
++-------------+-------------+
 ```
 
 ## Implemented Options
