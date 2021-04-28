@@ -3,6 +3,7 @@ package main
 // A simple implemenation of using the Golang DocTrans Framework
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -39,6 +40,7 @@ type serviceCmdLineOptions struct {
 	dta.DocTransServerOptions
 	dta.DocTransServerGenericOptions
 	LocalExecution string `opts:"group=Local Execution, short=x" help:"If set, execute the service locally once and read from this file"`
+	Contains       string `opts:"group=Local Execution, short=c" help:"If set, indicates on exit code (0) whether miid is included, -1 if not"`
 	AppName        string `opts:"group=Service, short=a" help:"If set, using this name as service name"`
 }
 
@@ -77,7 +79,15 @@ func main() {
 	if serviceOptions.LocalExecution != "" {
 		s := service.DtaService{}
 		s.AppName = serviceOptions.AppName
-		transDoc := service.ExecuteWorkerLocally(s, serviceOptions.LocalExecution)
+		if serviceOptions.Contains != "" {
+			contains := service.MiidContained(s, serviceOptions.LocalExecution, serviceOptions.Contains)
+			if contains {
+				os.Exit(0)
+			}
+			os.Exit(-1)
+		}
+
+		transDoc := service.InstanceIdString(s, serviceOptions.LocalExecution)
 		fmt.Println(transDoc)
 		return
 	}

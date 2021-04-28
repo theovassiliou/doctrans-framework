@@ -3,7 +3,6 @@ package serviceimplementation
 import (
 	"context"
 	"io/ioutil"
-	"regexp"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	log "github.com/sirupsen/logrus"
@@ -29,8 +28,6 @@ type CountResults struct {
 	Lines int
 	Words int
 }
-
-var re *regexp.Regexp = regexp.MustCompile(`[\S]+`)
 
 // TransformDocument implements dtaservice.DTAServer
 func (s *DtaService) TransformDocument(ctx context.Context, in *pb.TransformDocumentRequest) (*pb.TransformDocumentResponse, error) {
@@ -126,4 +123,29 @@ func ExecuteWorkerLocally(s DtaService, fileName string) string {
 	}
 
 	return transDoc
+}
+
+// InstanceIdString executes the worker locally, and returns the transformation result as string
+func InstanceIdString(s DtaService, iids string) string {
+	if iids == "" {
+		log.Errorln("No instanceId provided. Aborting.")
+		return ""
+	}
+
+	transDoc, _, err := Work(&s, []byte(iids), nil)
+	if check(err) {
+		return ""
+	}
+
+	return transDoc
+}
+
+func MiidContained(s DtaService, iids, miid string) bool {
+	if iids == "" {
+		log.Errorln("No instanceId provided. Aborting.")
+		return false
+	}
+
+	m := instanceid.NewCiid(iids)
+	return m.Contains(miid)
 }

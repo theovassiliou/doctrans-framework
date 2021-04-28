@@ -96,6 +96,22 @@ func (m *Miid) String() string {
 	return sB.String()
 }
 
+// Contains returns true if the Ciid contains the left aligned miid as part of the call graph
+func (ciid *Ciid) Contains(miid string) bool {
+	if miid == "" {
+		return false
+	}
+	return strings.Contains(ciid.String(), miid)
+}
+
+// Contains returns true if s is contained left aligned, else or if s is empty return false
+func (m *Miid) Contains(s string) bool {
+	if s == "" {
+		return false
+	}
+	return strings.Contains(m.String(), s)
+}
+
 func (m *Miid) metadata() string {
 	sB := strings.Builder{}
 

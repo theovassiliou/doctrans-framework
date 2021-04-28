@@ -852,3 +852,151 @@ func TestSanityCheck(t *testing.T) {
 		})
 	}
 }
+
+func TestMiid_Contains(t *testing.T) {
+
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name   string
+		fields string
+		args   args
+		want   bool
+	}{
+		{
+			name:   "correct",
+			fields: "msA/1.1/dev-1234%22s",
+			args: args{
+				s: "msA/1.1",
+			},
+			want: true,
+		},
+		{
+			name:   "correct",
+			fields: "msA/1.1/dev-1234%22s",
+			args: args{
+				s: "msA/1.1/dev-1234",
+			},
+			want: true,
+		},
+		{
+			name:   "wrong service",
+			fields: "msA/1.1/dev-1234%22s",
+			args: args{
+				s: "msB/1.1",
+			},
+			want: false,
+		},
+		{
+			name:   "wrong version",
+			fields: "msA/1.1/dev-1234%22s",
+			args: args{
+				s: "msA/1.2",
+			},
+			want: false,
+		},
+		{
+			name:   "wrong service, correct dev",
+			fields: "msA/1.1/dev-1234%22s",
+			args: args{
+				s: "dev-1234",
+			},
+			want: true,
+		},
+		{
+			name:   "empty",
+			fields: "msA/1.1/dev-1234%22s",
+			args: args{
+				s: "",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := NewMiid(tt.fields)
+			if got := m.Contains(tt.args.s); got != tt.want {
+				t.Errorf("Miid.Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCiid_Contains(t *testing.T) {
+
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name   string
+		fields string
+		args   args
+		want   bool
+	}{
+		{
+			name:   "correct",
+			fields: "MsA/1.1/xxx%22s(msC/1.4%5555s+msD/2.2%23234s)",
+			args: args{
+				s: "MsA/1.1",
+			},
+			want: true,
+		},
+		{
+			name:   "correct",
+			fields: "MsA/1.1/xxx%22s(msC/1.4%5555s+msD/2.2%23234s)",
+			args: args{
+				s: "msC",
+			},
+			want: true,
+		},
+		{
+			name:   "correct",
+			fields: "MsA/1.1/xxx%22s(msC/1.4%5555s+msD/2.2%23234s)",
+			args: args{
+				s: "msC/1.4",
+			},
+			want: true,
+		},
+		{
+			name:   "correct",
+			fields: "MsA/1.1/xxx%22s(msC/1.4%5555s+msD/2.2%23234s)",
+			args: args{
+				s: "msC/1.3",
+			},
+			want: false,
+		},
+		{
+			name:   "correct",
+			fields: "MsA/1.1/xxx%22s(msC/1.4%5555s+msD/2.2%23234s)",
+			args: args{
+				s: "msD/1.4",
+			},
+			want: false,
+		},
+		{
+			name:   "correct",
+			fields: "MsA/1.1/xxx%22s(msC/1.4%5555s+msD/2.2%23234s)",
+			args: args{
+				s: "msD/2.2",
+			},
+			want: true,
+		},
+		{
+			name:   "empty",
+			fields: "msA/1.1/dev-1234%22s",
+			args: args{
+				s: "",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := NewCiid(tt.fields)
+			if got := m.Contains(tt.args.s); got != tt.want {
+				t.Errorf("Ciid.Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
