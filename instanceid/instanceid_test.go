@@ -125,6 +125,16 @@ func Test_parseMIID(t *testing.T) {
 			},
 		},
 		{
+			"simple with minus",
+			args{"msA/1.17/dev-123ab%-1s"},
+			Miid{
+				Sn: "msA",
+				Vn: "1.17",
+				Va: "dev-123ab",
+				T:  -1,
+			},
+		},
+		{
 			"simple-short",
 			args{"msA/1.17%3333s"},
 			Miid{
@@ -133,6 +143,16 @@ func Test_parseMIID(t *testing.T) {
 				T:  3333,
 			},
 		},
+		{
+			"simple-short with minus",
+			args{"msA/1.17%-1s"},
+			Miid{
+				Sn: "msA",
+				Vn: "1.17",
+				T:  -1,
+			},
+		},
+
 		{
 			"simple-notSecond",
 			args{"msA/1.17%3333"},
@@ -760,6 +780,16 @@ func TestNewMiid(t *testing.T) {
 			},
 		},
 		{
+			"simple with minux",
+			args{"msA/1.1%-1s"},
+			Miid{
+				Sn: "msA",
+				Vn: "1.1",
+				Va: "",
+				T:  -1,
+			},
+		},
+		{
 			"complex",
 			args{"msA/1.1/asdfasdf-asdfasdf%22s"},
 			Miid{
@@ -767,6 +797,16 @@ func TestNewMiid(t *testing.T) {
 				Vn: "1.1",
 				Va: "asdfasdf-asdfasdf",
 				T:  22,
+			},
+		},
+		{
+			"complex with minus",
+			args{"msA/1.1/asdfasdf-asdfasdf%-1s"},
+			Miid{
+				Sn: "msA",
+				Vn: "1.1",
+				Va: "asdfasdf-asdfasdf",
+				T:  -1,
 			},
 		},
 		{
@@ -819,8 +859,13 @@ func TestSanityCheck(t *testing.T) {
 			false,
 		},
 		{
-			"not enough",
+			"minimal valid",
 			args{"abs/1.1%22s"},
+			true,
+		},
+		{
+			"minimal valid with minus",
+			args{"abs/1.1%-1s"},
 			true,
 		},
 		{
