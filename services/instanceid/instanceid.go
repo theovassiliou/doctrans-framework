@@ -3,6 +3,8 @@ package main
 // A simple implemenation of using the Golang DocTrans Framework
 import (
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/jpillora/opts"
@@ -30,7 +32,7 @@ func init() {
 }
 
 const (
-	appName = "DE.TU-BERLIN.INSTANCEID"
+	appName = "INSTANCEID"
 	dtaType = "Service"
 )
 
@@ -38,6 +40,8 @@ type serviceCmdLineOptions struct {
 	dta.DocTransServerOptions
 	dta.DocTransServerGenericOptions
 	LocalExecution string `opts:"group=Local Execution, short=x" help:"If set, execute the service locally once and read from this file"`
+	Contains       string `opts:"group=Local Execution, short=c" help:"If set, indicates on exit code (0) whether miid is included, -1 if not"`
+	AppName        string `opts:"group=Service, short=a" help:"If set, using this name as service name"`
 }
 
 func main() {
@@ -48,7 +52,7 @@ func main() {
 	serviceOptions.CfgFile = workingHomeDir + "/.dta/" + appName + "/config.json"
 	serviceOptions.Port = 50000
 	serviceOptions.LogLevel = log.WarnLevel
-	serviceOptions.HostName = aux.GetHostname()
+	serviceOptions.RegHostName = aux.GetHostname()
 	serviceOptions.RegistrarURL = "http://eureka:8761/eureka"
 
 	opts.New(&serviceOptions).
@@ -57,14 +61,33 @@ func main() {
 		Version(dtaservice.FormatFullVersion(cmdName, version, branch, commit)).
 		Parse()
 
+	if serviceOptions.AppName != "" {
+		serviceOptions.CfgFile = workingHomeDir + "/.dta/" + serviceOptions.AppName + "/config.json"
+		opts.New(&serviceOptions).
+			Repo("github.com/theovassiliou/doctrans").
+			ConfigPath(serviceOptions.CfgFile).
+			Version(dtaservice.FormatFullVersion(cmdName, version, branch, commit)).
+			Parse()
+	} else {
+		serviceOptions.AppName = appName
+	}
+
 	if serviceOptions.LogLevel != 0 {
 		log.SetLevel(serviceOptions.LogLevel)
 	}
 
 	if serviceOptions.LocalExecution != "" {
 		s := service.DtaService{}
-		s.AppName = appName
-		transDoc := service.ExecuteWorkerLocally(s, serviceOptions.LocalExecution)
+		s.AppName = serviceOptions.AppName
+		if serviceOptions.Contains != "" {
+			contains := service.MiidContained(s, serviceOptions.LocalExecution, serviceOptions.Contains)
+			if contains {
+				os.Exit(0)
+			}
+			os.Exit(-1)
+		}
+
+		transDoc := service.InstanceIdString(s, serviceOptions.LocalExecution)
 		fmt.Println(transDoc)
 		return
 	}
@@ -73,26 +96,25 @@ func main() {
 	// Calc Configuration
 	registerGRPC, registerHTTP := determineServerConfig(serviceOptions)
 	if registerGRPC {
-		_grpcGateway = newDtaService(serviceOptions, appName, "grpc")
+		_grpcGateway = newDtaService(serviceOptions, serviceOptions.AppName, "grpc")
 	}
 	if registerHTTP {
-		_httpGateway = newDtaService(serviceOptions, appName, "http")
+		_httpGateway = newDtaService(serviceOptions, serviceOptions.AppName, "http")
 	}
 
-	dta.LaunchServices(_grpcGateway, _httpGateway, appName, dtaType, homepageURL, serviceOptions.DocTransServerOptions)
+	dta.LaunchServices(_grpcGateway, _httpGateway, serviceOptions.AppName, dtaType, homepageURL, serviceOptions.DocTransServerOptions)
 }
 func newDtaService(options serviceCmdLineOptions, appName, proto string) dta.IDocTransServer {
 	gw := service.DtaService{
 		GenDocTransServer: dta.GenDocTransServer{
-			AppName:           appName,
-			DtaType:           dtaType,
-			Proto:             proto,
-			XInstanceIDprefix: buildXIIDprefix(),
+			AppName: appName,
+			DtaType: dtaType,
+			Proto:   proto,
 		},
 	}
 	gw.AppName = appName
 	if !options.XInstanceID {
-		gw.XInstanceIDprefix = buildXIIDprefix()
+		gw.XInstanceIDprefix = buildXIIDprefix(appName)
 		gw.XInstanceIDstartTime = startTime
 	}
 	return &gw
@@ -109,6 +131,19 @@ func determineServerConfig(gwOptions serviceCmdLineOptions) (registerGRPC, regis
 	return
 }
 
-func buildXIIDprefix() string {
-	return appName + "/" + version + "/" + branch + "-" + commit + "/"
+func buildXIIDprefix(appName string) string {
+	branchB := strings.Builder{}
+	if branch != "" || commit != "" {
+		branchB.WriteString("/")
+	}
+	if branch != "" {
+		branchB.WriteString(branch)
+	}
+
+	if commit != "" {
+		branchB.WriteString("-")
+		branchB.WriteString(commit)
+	}
+
+	return appName + "/" + version + branchB.String() + "%"
 }

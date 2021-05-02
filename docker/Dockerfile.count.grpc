@@ -1,0 +1,4 @@
+FROM scratch
+EXPOSE 50000
+ADD "./bin/docker/count" /
+CMD ["/count", "-a", "count", "--reg-host-name", "localhost", "--reg-ip-address", "192.168.178.60","--reg-port", "60000","-g", "--registrar-url", "http://192.168.178.60:8761/eureka"]

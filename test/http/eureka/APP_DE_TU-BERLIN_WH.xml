@@ -1,0 +1,68 @@
+<application>
+    <name>DE.TU-BERLIN.WH</name>
+    <instance>
+        <hostName>http@localhost</hostName>
+        <app>DE.TU-BERLIN.WH</app>
+        <ipAddr>192.168.178.60</ipAddr>
+        <status>UP</status>
+        <overriddenstatus>UNKNOWN</overriddenstatus>
+        <port enabled="true">60001</port>
+        <securePort enabled="false">0</securePort>
+        <countryId>1</countryId>
+        <dataCenterInfo class="com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo">
+            <name>MyOwn</name>
+        </dataCenterInfo>
+        <leaseInfo>
+            <renewalIntervalInSecs>30</renewalIntervalInSecs>
+            <durationInSecs>90</durationInSecs>
+            <registrationTimestamp>1613569981260</registrationTimestamp>
+            <lastRenewalTimestamp>1613573319216</lastRenewalTimestamp>
+            <evictionTimestamp>0</evictionTimestamp>
+            <serviceUpTimestamp>1613569981098</serviceUpTimestamp>
+        </leaseInfo>
+        <metadata>
+            <dtaType>Gateway</dtaType>
+            <dtaProto>http</dtaProto>
+        </metadata>
+        <homePageUrl>https://github.com/theovassiliou/doctrans/blob/master/wormhole/README.md</homePageUrl>
+        <statusPageUrl>http://localhost:60001/status</statusPageUrl>
+        <healthCheckUrl>http://localhost:60001/health</healthCheckUrl>
+        <vipAddress></vipAddress>
+        <isCoordinatingDiscoveryServer>false</isCoordinatingDiscoveryServer>
+        <lastUpdatedTimestamp>1613569981260</lastUpdatedTimestamp>
+        <lastDirtyTimestamp>1613569981097</lastDirtyTimestamp>
+        <actionType>ADDED</actionType>
+    </instance>
+    <instance>
+        <hostName>grpc@localhost</hostName>
+        <app>DE.TU-BERLIN.WH</app>
+        <ipAddr>192.168.178.60</ipAddr>
+        <status>UP</status>
+        <overriddenstatus>UNKNOWN</overriddenstatus>
+        <port enabled="true">60000</port>
+        <securePort enabled="false">0</securePort>
+        <countryId>1</countryId>
+        <dataCenterInfo class="com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo">
+            <name>MyOwn</name>
+        </dataCenterInfo>
+        <leaseInfo>
+            <renewalIntervalInSecs>30</renewalIntervalInSecs>
+            <durationInSecs>90</durationInSecs>
+            <registrationTimestamp>1613569981252</registrationTimestamp>
+            <lastRenewalTimestamp>1613573319219</lastRenewalTimestamp>
+            <evictionTimestamp>0</evictionTimestamp>
+            <serviceUpTimestamp>1613569981072</serviceUpTimestamp>
+        </leaseInfo>
+        <metadata>
+            <dtaType>Gateway</dtaType>
+            <dtaProto>grpc</dtaProto>
+        </metadata>
+        <homePageUrl>https://github.com/theovassiliou/doctrans/blob/master/wormhole/README.md</homePageUrl>
+        <statusPageUrl></statusPageUrl>
+        <vipAddress></vipAddress>
+        <isCoordinatingDiscoveryServer>false</isCoordinatingDiscoveryServer>
+        <lastUpdatedTimestamp>1613569981252</lastUpdatedTimestamp>
+        <lastDirtyTimestamp>1613569981071</lastDirtyTimestamp>
+        <actionType>ADDED</actionType>
+    </instance>
+</application>

@@ -1,0 +1,62 @@
+version: '3'
+services:
+  eureka:
+     image: aista/eureka
+     container_name: shop_eureka-intern
+     restart: always
+     ports:
+      - "9762:8761"
+  count:
+    depends_on: 
+      - eureka
+    container_name: shop_count_grpc
+    restart: always
+    build:
+      context: ../../
+      dockerfile: docker/Dockerfile.count.grpc
+    entrypoint:
+    - /count
+    - -g
+    - -a
+    - COUNT
+    - --registrar-url
+    - http://eureka:8761/eureka
+  shop_wormhole:
+    environment:
+      - SCOPE
+      - REGISTRARURL
+      - RESOLVERURL
+      - REGHOSTNAME
+      - REGIPADDRESS
+      - LOGLEVEL
+      - REGPORT
+      - PORTMAPPING_GRPC
+      - PORTMAPPING_HTML
+      - PORT
+    depends_on: 
+      - eureka
+    container_name: shop_wormhole_grpc_html
+    restart: always
+    build:
+      context: ../../
+      dockerfile: docker/Dockerfile.wormhole.grpc+html
+    ports:
+      - ${PORTMAPPING_GRPC}
+      - ${PORTMAPPING_HTML}
+    entrypoint:
+    - /wormhole
+    - --scope
+    - ${SCOPE}
+    - --registrar-url
+    - ${REGISTRARURL}
+    - --reg-host-name
+    - ${REGHOSTNAME}
+    - --reg-ip-address
+    - ${REGIPADDRESS}
+    - --reg-port
+    - ${REGPORT}
+    - --port
+    - ${PORT}
+    - --log-level
+    - ${LOGLEVEL}
+        

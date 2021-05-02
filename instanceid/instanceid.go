@@ -83,18 +83,33 @@ func (c *Ciid) String() string {
 
 func (m *Miid) String() string {
 	sB := strings.Builder{}
-
-	sB.WriteString(m.Sn)
-	if m.Vn != "" {
-		sB.WriteString("/" + m.Vn)
-	}
-	if m.Va != "" {
-		sB.WriteString("/" + m.Va)
-	}
-	if m.T != 0 {
+	if m.Sn != "" {
+		sB.WriteString(m.Sn)
+		if m.Vn != "" {
+			sB.WriteString("/" + m.Vn)
+		}
+		if m.Va != "" {
+			sB.WriteString("/" + m.Va)
+		}
 		sB.WriteString("%" + strconv.Itoa(m.T) + "s")
 	}
 	return sB.String()
+}
+
+// Contains returns true if the Ciid contains the left aligned miid as part of the call graph
+func (ciid *Ciid) Contains(miid string) bool {
+	if miid == "" {
+		return false
+	}
+	return strings.Contains(ciid.String(), miid)
+}
+
+// Contains returns true if s is contained left aligned, else or if s is empty return false
+func (m *Miid) Contains(s string) bool {
+	if s == "" {
+		return false
+	}
+	return strings.Contains(m.String(), s)
 }
 
 func (m *Miid) metadata() string {

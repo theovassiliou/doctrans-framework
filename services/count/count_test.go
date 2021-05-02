@@ -91,7 +91,7 @@ func TestCountDtaGet(t *testing.T) {
 		{
 			"list",
 			"/v1/service/list",
-			`{"services":["DE.TU-BERLIN.COUNT"]}`,
+			`{"services":["COUNT"]}`,
 			200,
 		},
 		{

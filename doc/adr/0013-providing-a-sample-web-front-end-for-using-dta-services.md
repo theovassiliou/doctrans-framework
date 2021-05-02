@@ -8,12 +8,12 @@ Accepted
 
 ## Context
 
-As DTA is an experimentation platform and thus we would like to have some easy to gain insights.  For example seeing which services, together with some details are registered at a eureka server. In addition you might want to use some functions. In addition we would
-like to use golang as main, potentially only programming language also for this task. 
+As DTA is an experimentation platform and thus we would like to have some easy to gain insights.  For example seeing which services, together with some details are registered at a eureka server. Also, you might want to use some functions. In addition, we would
+like to use golang as main, potentially only programming language also for this task.
 
 ## Decision
 
-We will use vugu.org to design web-front ends.
+We will create a web front end and vugu.org to design the web-frontend.
 
 ## Consequences
 

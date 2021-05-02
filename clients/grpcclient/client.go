@@ -39,6 +39,8 @@ import (
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	dta "github.com/theovassiliou/doctrans-framework/dtaservice"
 	pb "github.com/theovassiliou/doctrans-framework/dtaservice"
+	"github.com/theovassiliou/doctrans-framework/instanceid"
+	"github.com/theovassiliou/doctrans-framework/sympan"
 
 	"github.com/theovassiliou/go-eureka-client/eureka"
 	"google.golang.org/grpc"
@@ -80,7 +82,7 @@ func check(e error) {
 	}
 }
 
-const dtaGwID = "BERLIN.VASSILIOU-POHL.GW"
+const dtaGwID = "DE.TU-BERLIN.WH"
 
 func main() {
 	conf = config{
@@ -133,7 +135,9 @@ func main() {
 
 		//  - if service is unknown ask for a gateway
 		if conf.ServiceAddress == "" {
-			log.Infof("Looking for a gateway %s instead\n", dtaGwID)
+			log.Tracef("Building WH name from %v", conf.ServiceName)
+			dtaGwID := sympan.BuildFQWormhole(conf.ServiceName)
+			log.Infof("Looking for a wormhole %s instead\n", dtaGwID)
 
 			gService, _ := client.GetApplication(dtaGwID)
 			filter = &grpcInstanceFilter{
@@ -164,12 +168,14 @@ func main() {
 	defer cancel()
 
 	if conf.ListServices {
-		r, err := c.ListServices(ctx, &emptypb.Empty{})
+		var header metadata.MD
+		r, err := c.ListServices(ctx, &emptypb.Empty{}, grpc.Header(&header))
 		if err != nil {
 			log.Fatalf("could not list services: %v", err)
 		}
 
 		fmt.Println(strings.Join(r.GetServices(), "\n"))
+		fmt.Printf("Received-Header: %#v\n", header)
 		os.Exit(0)
 	}
 
@@ -193,7 +199,14 @@ func main() {
 		}
 		fmt.Println(fN)
 		fmt.Println(string(r.GetDocument()))
-		fmt.Printf("Received-Header: %#v\n", header)
+		ids := header.Get("X-Instance-Id")
+		if len(ids) > 0 {
+			theCiid := instanceid.NewCiid(ids[0])
+			fmt.Printf("The response was received from \n%v", instanceid.PrintCiid(theCiid))
+		} else {
+			fmt.Printf("Received-Header: %#v\n", header)
+
+		}
 	}
 }
 

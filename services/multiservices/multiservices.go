@@ -36,14 +36,14 @@ type service struct {
 	serviceCreator func(options serviceCmdLineOptions, appName, proto string) dta.IDocTransServer
 }
 
-var appName = "DE.TU-BERLIN.MULTISERVICE"
+var appName = "MULTISERVICE"
 var localServices = []service{
 	{
-		"DE.TU-BERLIN.ECHO",
+		"ECHO",
 		newEchoService,
 	},
 	{
-		"DE.TU-BERLIN.HTML2TEXT",
+		"HTML2TEXT",
 		newHTML2TextService,
 	},
 }
@@ -56,7 +56,7 @@ type serviceCmdLineOptions struct {
 	dta.DocTransServerOptions
 	dta.DocTransServerGenericOptions
 	LocalExecution string `opts:"group=Local Execution, short=x" help:"If set, execute the service locally once and read from this file"`
-	Html2Text      bool   `opts:"group=Local Execution, short=1" help:"If set, use HTML2TEXT service"`
+	HTML2Text      bool   `opts:"group=Local Execution, short=1" help:"If set, use HTML2TEXT service"`
 	Echo           bool   `opts:"group=Local Execution, short=2" help:"If set, use ECHO service"`
 }
 
@@ -68,7 +68,7 @@ func main() {
 	serviceOptions.CfgFile = workingHomeDir + "/.dta/" + cmdName + "/config.json"
 	serviceOptions.Port = 50000
 	serviceOptions.LogLevel = log.WarnLevel
-	serviceOptions.HostName = aux.GetHostname()
+	serviceOptions.RegHostName = aux.GetHostname()
 	serviceOptions.RegistrarURL = "http://eureka:8761/eureka"
 
 	opts.New(&serviceOptions).
@@ -82,7 +82,7 @@ func main() {
 	}
 
 	if serviceOptions.LocalExecution != "" {
-		if serviceOptions.Html2Text {
+		if serviceOptions.HTML2Text {
 			s := h2t.DtaService{}
 			s.AppName = appName
 			transDoc := h2t.ExecuteWorkerLocally(s, serviceOptions.LocalExecution)

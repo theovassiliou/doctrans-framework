@@ -1,0 +1,68 @@
+<application>
+    <name>DE.TU-BERLIN.COUNT</name>
+    <instance>
+        <hostName>http@Theofaniss-iMac.fritz.box</hostName>
+        <app>DE.TU-BERLIN.COUNT</app>
+        <ipAddr>192.168.178.60</ipAddr>
+        <status>UP</status>
+        <overriddenstatus>UNKNOWN</overriddenstatus>
+        <port enabled="true">50001</port>
+        <securePort enabled="false">0</securePort>
+        <countryId>1</countryId>
+        <dataCenterInfo class="com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo">
+            <name>MyOwn</name>
+        </dataCenterInfo>
+        <leaseInfo>
+            <renewalIntervalInSecs>30</renewalIntervalInSecs>
+            <durationInSecs>90</durationInSecs>
+            <registrationTimestamp>1613571774232</registrationTimestamp>
+            <lastRenewalTimestamp>1613573339229</lastRenewalTimestamp>
+            <evictionTimestamp>0</evictionTimestamp>
+            <serviceUpTimestamp>1613571773774</serviceUpTimestamp>
+        </leaseInfo>
+        <metadata>
+            <dtaType>Service</dtaType>
+            <dtaProto>http</dtaProto>
+        </metadata>
+        <homePageUrl>github.com/theovassiliou/doctrans-framework</homePageUrl>
+        <statusPageUrl>http://Theofaniss-iMac.fritz.box:50001/status</statusPageUrl>
+        <healthCheckUrl>http://Theofaniss-iMac.fritz.box:50001/health</healthCheckUrl>
+        <vipAddress></vipAddress>
+        <isCoordinatingDiscoveryServer>false</isCoordinatingDiscoveryServer>
+        <lastUpdatedTimestamp>1613571774232</lastUpdatedTimestamp>
+        <lastDirtyTimestamp>1613571773773</lastDirtyTimestamp>
+        <actionType>ADDED</actionType>
+    </instance>
+    <instance>
+        <hostName>grpc@Theofaniss-iMac.fritz.box</hostName>
+        <app>DE.TU-BERLIN.COUNT</app>
+        <ipAddr>192.168.178.60</ipAddr>
+        <status>UP</status>
+        <overriddenstatus>UNKNOWN</overriddenstatus>
+        <port enabled="true">50000</port>
+        <securePort enabled="false">0</securePort>
+        <countryId>1</countryId>
+        <dataCenterInfo class="com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo">
+            <name>MyOwn</name>
+        </dataCenterInfo>
+        <leaseInfo>
+            <renewalIntervalInSecs>30</renewalIntervalInSecs>
+            <durationInSecs>90</durationInSecs>
+            <registrationTimestamp>1613571774226</registrationTimestamp>
+            <lastRenewalTimestamp>1613573339232</lastRenewalTimestamp>
+            <evictionTimestamp>0</evictionTimestamp>
+            <serviceUpTimestamp>1613571773767</serviceUpTimestamp>
+        </leaseInfo>
+        <metadata>
+            <dtaType>Service</dtaType>
+            <dtaProto>grpc</dtaProto>
+        </metadata>
+        <homePageUrl>github.com/theovassiliou/doctrans-framework</homePageUrl>
+        <statusPageUrl></statusPageUrl>
+        <vipAddress></vipAddress>
+        <isCoordinatingDiscoveryServer>false</isCoordinatingDiscoveryServer>
+        <lastUpdatedTimestamp>1613571774226</lastUpdatedTimestamp>
+        <lastDirtyTimestamp>1613571773767</lastDirtyTimestamp>
+        <actionType>ADDED</actionType>
+    </instance>
+</application>
