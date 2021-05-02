@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"regexp"
+	"strings"
 
 	"github.com/Knetic/govaluate"
 	"github.com/golang/protobuf/ptypes/empty"
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	pb "github.com/theovassiliou/doctrans-framework/dtaservice"
+	"github.com/theovassiliou/go-eureka-client/eureka"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -25,6 +27,11 @@ type DtaService struct {
 
 var re *regexp.Regexp = regexp.MustCompile(`[\S]+`)
 
+// Work returns an encoded JSON object containing the
+// bytes 	count the number of bytes
+// lines	count the numnber of lines
+// words		count the number of words
+// The Service returns  the number of lines, words, and bytes contained in the input document
 func Work(s *DtaService, input []byte, options *structpb.Struct) (string, []string, error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -123,4 +130,23 @@ func ExecuteWorkerLocally(s DtaService, fileName string) string {
 	log.WithFields(log.Fields{"Service": "add", "Status": "TransformDocument"}).Tracef("Received document: %v ", dat)
 
 	return transDoc
+}
+
+type grpcInstanceFilter struct {
+	serviceName string
+	instance    eureka.InstanceInfo
+}
+
+func (g *grpcInstanceFilter) VisitForApplication(a eureka.Application) {
+	if g.serviceName == a.Name {
+		for _, i := range a.Instances {
+			if strings.HasPrefix(i.HostName, "grpc") {
+				g.instance = i
+			}
+		}
+	}
+}
+
+func (g *grpcInstanceFilter) VisitForInstance(i eureka.InstanceInfo) {
+
 }
