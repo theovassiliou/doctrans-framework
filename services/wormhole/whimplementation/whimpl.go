@@ -13,9 +13,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	pb "github.com/theovassiliou/doctrans-framework/dtaservice"
-	"github.com/theovassiliou/doctrans-framework/instanceid"
 	"github.com/theovassiliou/doctrans-framework/sympan"
 	"github.com/theovassiliou/go-eureka-client/eureka"
+	instanceid "github.com/theovassiliou/instanceidentification"
 )
 
 // Wormhole holds the infrastructure for performing the service

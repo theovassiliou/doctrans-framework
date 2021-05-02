@@ -39,8 +39,8 @@ import (
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	dta "github.com/theovassiliou/doctrans-framework/dtaservice"
 	pb "github.com/theovassiliou/doctrans-framework/dtaservice"
-	"github.com/theovassiliou/doctrans-framework/instanceid"
 	"github.com/theovassiliou/doctrans-framework/sympan"
+	instanceid "github.com/theovassiliou/instanceidentification"
 
 	"github.com/theovassiliou/go-eureka-client/eureka"
 	"google.golang.org/grpc"

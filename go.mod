@@ -12,10 +12,11 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
-	github.com/sirupsen/logrus v1.7.0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/theovassiliou/go-eureka-client v1.1.3
-	github.com/xlab/treeprint v1.0.0
+	github.com/theovassiliou/instanceidentification v0.0.0-20210502152038-13c648686c41
+	github.com/xlab/treeprint v1.1.0
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	google.golang.org/genproto v0.0.0-20210122163508-8081c04a3579
 	google.golang.org/grpc v1.35.0

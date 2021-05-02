@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	pb "github.com/theovassiliou/doctrans-framework/dtaservice"
-	"github.com/theovassiliou/doctrans-framework/instanceid"
+	instanceid "github.com/theovassiliou/instanceidentification"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

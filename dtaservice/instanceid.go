@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/theovassiliou/doctrans-framework/instanceid"
+	instanceid "github.com/theovassiliou/instanceidentification"
 	"google.golang.org/grpc/metadata"
 )
 

@@ -11,9 +11,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/doctrans-framework/dtaservice"
 	dta "github.com/theovassiliou/doctrans-framework/dtaservice"
-	"github.com/theovassiliou/doctrans-framework/instanceid"
 	aux "github.com/theovassiliou/doctrans-framework/ipaux"
 	wh "github.com/theovassiliou/doctrans-framework/services/wormhole/whimplementation"
+	instanceid "github.com/theovassiliou/instanceidentification"
 )
 
 //set this via ldflags (see https://stackoverflow.com/q/11354518)
