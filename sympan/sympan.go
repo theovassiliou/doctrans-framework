@@ -7,6 +7,8 @@ import (
 	"github.com/theovassiliou/go-eureka-client/eureka"
 )
 
+// ShortenFQName removes from a fully qualified name the last name. If the FQN was a FQStarName the
+// scope will be returned. If the FQN was a galaxy name, the scope will be reduced by one.
 func ShortenFQName(fqName string) string {
 	fqName = strings.TrimSuffix(fqName, ".")
 	elements := strings.Split(fqName, ".")
@@ -16,7 +18,7 @@ func ShortenFQName(fqName string) string {
 }
 
 // BuildFQWormhole contructs from a given fully-qualified star name
-// the fully qualliffied wormhole name
+// the fully qualified wormhole name, for it's scope.
 func BuildFQWormhole(fqName string) string {
 	s := ShortenFQName(fqName)
 	if s == "" {
